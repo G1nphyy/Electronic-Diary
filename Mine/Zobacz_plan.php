@@ -1,7 +1,7 @@
 <?php 
 session_start();
 if (!$_SESSION['Login']) {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 
@@ -150,6 +150,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
         .button-container button:hover {
             background-color: #45a049;
         }
+        @media screen and (max-width: 829px){
+            .table-container {
+                min-width: 90%;
+                overflow: auto;
+            }
+
+        }
+        @media screen and (max-width:500px) {
+            header h1{
+                text-wrap: wrap;
+                padding-right: 100px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -158,61 +171,63 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
     <?php include "nav.php"?>
 </header>
 <?php if ($plan): ?>
-    <table>
-        <thead>
-            <tr>
-                <th>Godzina</th>
-                <?php foreach ($days as $day): ?>
-                    <th class="rotate"><div><?=$day?></div></th>
-                <?php endforeach; ?>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($times as $index => $time): ?>
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
-                    <td class="time-slot"><?=$time?></td>
+                    <th>Godzina</th>
                     <?php foreach ($days as $day): ?>
-                        <td>
-                            <?php 
-                            $dayPlan = isset($plan[$day]) ? $plan[$day] : [];
-                            if (isset($dayPlan[$index]) && is_array($dayPlan[$index])) {
-                                foreach ($dayPlan[$index] as $lesson) {
-                                    if (count($lesson) >= 2) {
-                                        $teacherName = '';
-                                        if (isset($lesson['Nauczyciel'])) {
-                                            $sql = "SELECT * FROM users WHERE id = ?";
-                                            $stmt = $conn->prepare($sql);
-                                            $stmt->bind_param('i', $lesson['Nauczyciel']);
-                                            $stmt->execute();
-                                            $userResult = $stmt->get_result();
-                                            if ($userResult->num_rows > 0) {
-                                                $user = $userResult->fetch_assoc();
-                                                $teacherName = $user['Imie'] . ' ' . $user['Nazwisko'];
-                                            }
-                                            $stmt->close();
-                                        }
-                                        
-                                            if ($id != '') {            
-                                                echo $lesson['Przedmiot'] . " - " . $lesson['Klasa'] . "<br> Sala: <b> " . $lesson['Sala'] . "</b> <br>";
-                                            } else if ($klasa != '') {
-                                                echo $lesson['Przedmiot'] . " - " . $lesson['Sala'] . "<br> <b>" . $teacherName . "</b> <br>";
-                                            }else{
-                                                echo '-';
-                                            }
-                                    }else{
-                                        echo "-";
-                                    }
-                                }
-                            } else {
-                                echo "-";
-                            }
-                            ?>
-                        </td>
+                        <th class="rotate"><div><?=$day?></div></th>
                     <?php endforeach; ?>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                <?php foreach ($times as $index => $time): ?>
+                    <tr>
+                        <td class="time-slot"><?=$time?></td>
+                        <?php foreach ($days as $day): ?>
+                            <td>
+                                <?php 
+                                $dayPlan = isset($plan[$day]) ? $plan[$day] : [];
+                                if (isset($dayPlan[$index]) && is_array($dayPlan[$index])) {
+                                    foreach ($dayPlan[$index] as $lesson) {
+                                        if (count($lesson) >= 2) {
+                                            $teacherName = '';
+                                            if (isset($lesson['Nauczyciel'])) {
+                                                $sql = "SELECT * FROM users WHERE id = ?";
+                                                $stmt = $conn->prepare($sql);
+                                                $stmt->bind_param('i', $lesson['Nauczyciel']);
+                                                $stmt->execute();
+                                                $userResult = $stmt->get_result();
+                                                if ($userResult->num_rows > 0) {
+                                                    $user = $userResult->fetch_assoc();
+                                                    $teacherName = $user['Imie'] . ' ' . $user['Nazwisko'];
+                                                }
+                                                $stmt->close();
+                                            }
+                                            
+                                                if ($id != '') {            
+                                                    echo $lesson['Przedmiot'] . " - " . $lesson['Klasa'] . "<br> Sala: <b> " . $lesson['Sala'] . "</b> <br>";
+                                                } else if ($klasa != '') {
+                                                    echo $lesson['Przedmiot'] . " - " . $lesson['Sala'] . "<br> <b>" . $teacherName . "</b> <br>";
+                                                }else{
+                                                    echo '-';
+                                                }
+                                        }else{
+                                            echo "-";
+                                        }
+                                    }
+                                } else {
+                                    echo "-";
+                                }
+                                ?>
+                            </td>
+                        <?php endforeach; ?>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
     <br>
     <?php if ($_SESSION['Rola_user'] === 'Admin' and isset($_GET['klasa'])): ?>
     <form action="Zobacz_plan.php?klasa=<?=$_GET['klasa']?>" method="POST">
@@ -224,6 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
 <?php else: ?>
     <p>Brak planu lekcji dla wybranej klasy.</p>
 <?php endif; ?>
+<?php include 'footer.php' ?>
 </body>
 </html>
 <?php $conn->close(); ?>

@@ -86,7 +86,8 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
             background-color: #f9f9f9;
             margin: 0;
             display: flex;
-            height: 100vh;
+            flex-direction: column;
+            min-height: 100vh;
         }
         header {
             width: 100%;
@@ -101,6 +102,7 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
         }
         .container {
             display: flex;
+            flex-direction: column;
             width: 100%;
             margin-top: 80px;
         }
@@ -128,6 +130,7 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
             background-color: #444;
         }
         .content {
+            
             margin-left: 250px;
             padding: 20px;
             width: calc(100% - 250px);
@@ -226,15 +229,124 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
             transform: scale(1.05);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         }
+        @media screen and (max-width: 850px) {
+            .sidebar{
+                width: 150px;
+                text-wrap: wrap;
+            }
+            footer.content-overflow{
+                width: 100% !important;
+                left: 0 !important;
+            }
+            .container{
+                margin-top: 62.5px;
+            }
+            .content{
+                margin-left: 0;
+            }
+            .sidebar{
+                display: none;
+            }
+            .content-overflow{
+                font-size: 0.7em;
+            }
+            .table-container{
+                min-width: 90%;
+                overflow: auto;
+            }
+            header h1{
+                padding-right: 100px;
+                text-wrap: wrap;
+            }
+        }
+        .barinnav ul{
+            list-style: none;
+            padding: 0;
+        }
+        .barinnav li{
+            font-size: 1.4em;
+            cursor: pointer;
+            transition: all .3s linear;
+        }
+        .barinnav li:hover{
+            background-color: #333 ;
+            color: #f1f1f1;
+        }
+        details {
+            width: 70%;
+            background-color: #111;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            margin: 0 auto;
+        }
+        summary {
+            padding: 10px;
+            cursor: pointer;
+            outline: none;
+            font-weight: bold;
+        }
 
     </style>
     <script>
+        function headerChcek(){
+            let header = document.querySelector('header');
+            let headerHeight = header.offsetHeight;
+            let content =document.querySelector(".container");
+            content.style.marginTop = headerHeight + 'px';
+        }
+
         function showSubject(subject) {
             document.querySelectorAll('.subject').forEach(function(elem) {
                 elem.classList.add('hidden');
             });
             document.getElementById(subject).classList.remove('hidden');
         }
+        function addSidenav() {
+
+            let sidebar = document.querySelector(".container > .sidebar");
+            let nav = document.querySelector('#mySidenav > .content-nav');
+
+            if (window.outerWidth <= 850 && !nav.querySelector('details')) {
+                let details = document.createElement('details');
+                let summary = document.createElement('summary');
+                summary.textContent = 'Wybierz przemiot'; 
+                details.appendChild(summary);
+                details.appendChild(sidebar.cloneNode(true));
+                nav.appendChild(details);
+                let ocs = document.querySelector('details > .sidebar');
+                ocs.setAttribute('class', 'barinnav');
+
+            } else if (window.innerWidth > 850) {
+                let detailsElement = nav.querySelector('details');
+                if (detailsElement) {
+                    detailsElement.remove();
+                }
+            }
+        }
+        window.addEventListener('resize', function() {
+            addSidenav();
+            headerChcek();
+
+            let subjects = document.querySelectorAll('.subject');
+            let footer = document.querySelector('.content-overflow');
+            
+            if (footer) {
+                let footerStyles = window.getComputedStyle(footer);
+                
+                let sizeOfFooter = footerStyles.height;
+                
+                subjects.forEach(function(subject) {
+                    subject.style.marginBottom =sizeOfFooter;
+                });
+            }
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            addSidenav();
+            headerChcek();
+        });
+
+
+        
     </script>
 </head>
 <body>
@@ -256,20 +368,22 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
             <?php foreach ($ocenySubjects as $subject => $ocenaStr) : ?>
                 <div id="<?php echo htmlspecialchars($subject); ?>" class="subject hidden">
                     <h2><?php echo htmlspecialchars($subject); ?></h2>
-                    <table>
-                        <tr>
-                            <th>Ocena</th>
-                            <th>Waga</th>
-                            <th>Opis</th>
-                        </tr>
-                        <?php foreach (parseOceny($ocenaStr) as $ocena) : ?>
+                    <div class="table-container">
+                        <table>
                             <tr>
-                                <td><div class="ocena ocena<?=$ocena['ocena']?>"><?php echo $ocena['ocena']; ?></div></td>
-                                <td><?php echo $ocena['waga']; ?></td>
-                                <td><?php echo $ocena['opis']; ?></td>
+                                <th>Ocena</th>
+                                <th>Waga</th>
+                                <th>Opis</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </table>
+                            <?php foreach (parseOceny($ocenaStr) as $ocena) : ?>
+                                <tr>
+                                    <td><div class="ocena ocena<?=$ocena['ocena']?>"><?php echo $ocena['ocena']; ?></div></td>
+                                    <td><?php echo $ocena['waga']; ?></td>
+                                    <td><?php echo $ocena['opis']; ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
                     <div class="average <?php echo $subjectAverages[$subject] < 1.85 ? 'red' : 'green'; ?>">
                         Średnia z przedmiotu: <?php echo number_format($subjectAverages[$subject], 2); ?>
                     </div>
@@ -295,5 +409,20 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
             </div>
         </div>
     </div>
+    <?php include 'footer.php' ?>
+    <style>
+        footer.content-overflow{
+            position: fixed;
+            left: 250px;
+            bottom: 0;
+            width: calc(100% - 250px);
+        }
+        .content{
+            width: auto !important;
+        }
+    </style>
+        
+    
+    
 </body>
 </html>

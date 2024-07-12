@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['Login']) || $_SESSION['Rola_user'] == 'Uczen') {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 
@@ -98,7 +98,7 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
             $rows = $result->fetch_all(MYSQLI_ASSOC);
 
             $subjectColumns = !empty($rows) ? array_keys($rows[0]) : [];
-            $subjectColumns = array_slice($subjectColumns, 10);
+            $subjectColumns = array_slice($subjectColumns, 11);
         } else {
             echo "Error retrieving data: " . $conn->error;
             $rows = [];
@@ -432,6 +432,20 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
             background-color: #f01111a1;
             color: white;
         }
+        @media screen and (max-width: 580px) {
+            .filtry {
+                display: grid;
+                grid-template: '1fr 1fr' ;
+            }
+        }
+        @media screen and (max-width:550px){
+            .filtry{
+                grid-template: '1fr';
+            }
+            .multi-add-box{
+                width: 90%;
+            }
+        }
 </style>
 
 </head>
@@ -444,11 +458,12 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
     <div class="container">
         <div class="filtry">
             <form id="searchForm" method="post" action="">
-                <input id="oho" type="text" name="search" placeholder="Search..." value="<?= htmlspecialchars($search) ?>">
-                <button type="submit">Search</button>
+                <input id="oho" type="text" name="search" placeholder="Szukaj..." value="<?= htmlspecialchars($search) ?>">
+                <button type="submit">Szukaj</button>
             </form>
             <form action="" method="post" id="filters">
-                <select name="ilu_ludzi" onchange="this.form.submit()">
+                <label for="ile_ludzi">Ilość wyświetlanych osób:</label>
+                <select id="ile_ludzi" name="ilu_ludzi" onchange="this.form.submit()">
                     <option value="1" <?=$limit == 1 ? 'selected' : ''?>>1</option>
                     <option value="2" <?=$limit == 2 ? 'selected' : ''?>>2</option>
                     <option value="5" <?=$limit == 5 ? 'selected' : ''?>>5</option>
@@ -458,7 +473,8 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
                 </select>
             </form>
             <form action="" method="post">
-                <select name="klasa_filter" onchange="this.form.submit()">
+            <label for="Klasa_filter">Klasa:</label>
+                <select id="Klasa_filter" name="klasa_filter" onchange="this.form.submit()">
                     <?php if (!empty($allClass)): ?>
                         <?php foreach(array_unique($allClass) as $osoba): ?>
                             <option value="<?= htmlspecialchars($osoba) ?>" <?=($Klasa != '' and htmlspecialchars($osoba) == $Klasa) ? 'selected' : "" ?>> <?= htmlspecialchars($osoba)?></option>
@@ -469,7 +485,8 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
             </form>
             <?php if ($_SESSION['Rola_user'] != "Nauczyciel") : ?>
             <form action="" method="post">
-                <select name="rola_filter" onchange="this.form.submit()">
+                <label for="rola_filter">Rola:</label>
+                <select id="rola_filter" name="rola_filter" onchange="this.form.submit()">
                     <?php if (!empty($allRoles)): ?>
                         <?php foreach(array_unique($allRoles) as $RolaK): ?>
                             <option value="<?= htmlspecialchars($RolaK) ?>" <?=($Rola != '' and htmlspecialchars($RolaK) == $Rola) ? 'selected' : "" ?>> <?= htmlspecialchars($RolaK)?></option>
@@ -745,8 +762,8 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
             </script>
         </form>
     </div>
-
-
+    </div>
+    <?php include 'footer.php' ?>
 </body>
 </html>
 <script>

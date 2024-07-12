@@ -1,7 +1,7 @@
 <?php
 session_start();
 if ($_SESSION['Rola_user'] !== 'Admin') {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 

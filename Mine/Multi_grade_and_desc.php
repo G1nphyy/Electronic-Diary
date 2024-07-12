@@ -2,7 +2,7 @@
 session_start();
 
 if (!isset($_SESSION['Login']) || $_SESSION['Rola_user'] == 'Uczen') {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 
@@ -60,6 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: $redirect_page");
     exit();
 } else {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }

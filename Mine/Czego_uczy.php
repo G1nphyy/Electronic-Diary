@@ -2,7 +2,7 @@
 
 session_start();
 if(!isset($_SESSION['Login']) || !$_SESSION['Login']){
-    header('Location: index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 require_once 'db.php';

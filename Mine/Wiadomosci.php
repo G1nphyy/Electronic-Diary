@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!$_SESSION['Login']) {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 
@@ -50,6 +50,7 @@ if ($conn->connect_error) {
         .tcontainer {
             width: 100%;
             display: flex;
+            overflow-x: auto;
             align-items: start;
             justify-content: center;
             border-left: 1px solid #ddd;
@@ -169,6 +170,7 @@ if ($conn->connect_error) {
             overflow: auto;
         }
         #composeMessageSection {
+            overflow: auto;
             position: fixed;
             bottom: 0;
             right: 10px;
@@ -282,7 +284,71 @@ if ($conn->connect_error) {
             justify-content: space-between;
             align-items: center;
         }
+        @media only screen and (max-width: 768px) {
+            .container {
+                margin: 120px auto;
+                padding: 10px;
+                flex-direction: column;
+            }
 
+            .tabs {
+                flex-direction: row;
+                align-items: center;
+                margin-bottom: 10px;
+                height: auto;
+            }
+
+            table {
+                width: 100% !important; 
+                box-sizing: content-box; 
+
+            }
+            .tcontainer {
+                display: block;
+                width: 100%;
+                overflow-x: auto;
+                border-left:none;
+            }
+            #composeMessageSection, .modal-content {
+                width: 95%;
+                padding: 10px;
+                max-height: 70%;
+                max-width: 100%;
+                min-width: none !important;
+            }
+            div.send{
+                min-width: 90% !important;
+            }
+
+            .btn {
+                border-radius: 5px;
+                font-size: 26px;
+                padding: 8px 16px;
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+
+        @media only screen and (max-width: 480px) {
+            .container {
+                padding: 5px;
+            }
+
+            .tabs {
+                margin-bottom: 10px;
+                flex-direction: column;
+                width: 90%;
+                gap: 10px;
+            }
+            .tabs div{
+                width: 90%;
+                margin: 0 auto;
+            }
+            .btn {
+                font-size: 20px;
+                padding: 8px 12px;
+            }
+        }
     </style>
 </head>
 <body>

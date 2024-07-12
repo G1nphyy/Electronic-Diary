@@ -1,6 +1,6 @@
 <?php
 session_start();
-unset($_SESSION["cheaking_haslo"]);
+unset($_SESSION["checking_haslo"]);
 if(isset($_SESSION['Login']) and $_SESSION['Login']){
     header('Location: welcome.php');
     exit();
@@ -76,13 +76,27 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
             color: #007bff;
             text-decoration: none;
         }
+        .back{
+            position: fixed; top:10px; left: 10px;
+            text-align: center;
+        }
+        .back button {
+            border: 2px #333 solid;
+            color: #333;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
     
-    <form action="register.php" method="post">
+    <form action="register_tel.php" method="post">
         <h1>Zarejestruj się</h1>
-        <input type="text" name="Imie" placeholder="Imię" value="<?php echo isset($_SESSION['cheaking_imie']) ? htmlspecialchars($_SESSION['cheaking_imie']) : ''; ?>"><br>
+        <input type="text" name="Imie" placeholder="Imię" value="<?php echo isset($_SESSION['checking_imie']) ? htmlspecialchars($_SESSION['checking_imie']) : ''; ?>"><br>
         <?php
             if (isset($_SESSION['Imie_e'])) {
                 echo '<span class="error">' . $_SESSION['Imie_e'] . '</span>';
@@ -90,7 +104,7 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
             }
         ?>
         <br>
-        <input type="text" name="Nazwisko" placeholder="Nazwisko" value="<?php echo isset($_SESSION['cheaking_nazwisko']) ? htmlspecialchars($_SESSION['cheaking_nazwisko']) : ''; ?>"><br>
+        <input type="text" name="Nazwisko" placeholder="Nazwisko" value="<?php echo isset($_SESSION['checking_nazwisko']) ? htmlspecialchars($_SESSION['checking_nazwisko']) : ''; ?>"><br>
         <?php
             if (isset($_SESSION['Nazwisko_e'])) {
                 echo '<span class="error">' . $_SESSION['Nazwisko_e'] . '</span>';
@@ -98,7 +112,7 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
             }
         ?>
         <br>
-        <input type="text" name="E-mail" placeholder="E-mail" value="<?php echo isset($_SESSION['cheaking_email']) ? htmlspecialchars($_SESSION['cheaking_email']) : ''; ?>"><br>
+        <input type="text" name="E-mail" placeholder="E-mail" value="<?php echo isset($_SESSION['checking_email']) ? htmlspecialchars($_SESSION['checking_email']) : ''; ?>"><br>
         <?php
             if (isset($_SESSION['email_e'])) {
                 echo '<span class="error">' . $_SESSION['email_e'] . '</span>';
@@ -123,7 +137,7 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
         ?>
         <br>
         <label>
-        <input type="checkbox" name="regulamin" <?= isset($_SESSION['cheaking_chceckbox']) ? 'checked' : ''?> >
+        <input type="checkbox" name="regulamin" <?= isset($_SESSION['checking_chceckbox']) ? 'checked' : ''?> >
         Zapoznałam(em) się z <a href="Regulamin.html" target="_blank" class="inny">Regulaminem</a>
         </label>
         <?php
@@ -143,8 +157,8 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
                 }
             ?>
         </p>
-        <a href="index.php">Wróć do strony logowania</a>
+        <a href="zaloguj.php">Zaloguj się</a>
+        <a href="index.php">Powrót</a>
     </form>
-    
 </body>
 </html>
