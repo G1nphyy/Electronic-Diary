@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!$_SESSION['Login'] || $_SESSION['Rola_user'] == 'Uczen') {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 require_once 'db.php';
@@ -109,7 +109,7 @@ if ($conn->connect_errno != 0) {
         $rows = $result->fetch_all(MYSQLI_ASSOC);
 
         $subjectColumns = !empty($rows) ? array_keys($rows[0]) : [];
-        $subjectColumns = array_slice($subjectColumns, 10);
+        $subjectColumns = array_slice($subjectColumns, 11);
     } else {
         echo "Error retrieving data: " . $conn->error;
         $rows = [];
@@ -526,7 +526,18 @@ if ($conn->connect_errno != 0) {
             margin-top: 10px;
             color: #ff6347;
         }
-
+        @media screen and (max-width: 800px) {
+            .filters{
+                display: grid;
+                grid-template: '1fr' ;
+            }
+            .container{
+                width: auto !important;
+            }
+            header h1{
+                margin-right: 100px;
+            }
+        }
 
     </style>
     <script>
@@ -563,11 +574,12 @@ if ($conn->connect_errno != 0) {
     <div class="container">
         <div class="filters">
             <form id="searchForm" method="post" action="">
-                <input id="oho" type="text" name="search" placeholder="Search..." value="<?= htmlspecialchars($search) ?>">
-                <button type="submit">Search</button>
+                <input id="oho" type="text" name="search" placeholder="Szukaj..." value="<?= htmlspecialchars($search) ?>">
+                <button type="submit">Szukaj</button>
             </form>
             <form action="" method="post" id="filters">
-                <select name="ilu_ludzi" onchange="this.form.submit()">
+                <label for="ilu_wyświetl">Ilość wyświetlanych osób:</label>
+                <select id="ilu_wyświetl"name="ilu_ludzi" onchange="this.form.submit()">
                     <option value="1" <?=$limit == 1 ? 'selected' : ''?>>1</option>
                     <option value="2" <?=$limit == 2 ? 'selected' : ''?>>2</option>
                     <option value="5" <?=$limit == 5 ? 'selected' : ''?>>5</option>
@@ -577,7 +589,8 @@ if ($conn->connect_errno != 0) {
                 </select>
             </form>
             <form action="" method="post">
-                <select name="klasa_filter" onchange="this.form.submit()">
+                <label for="klasa_filter">Klasa:</label>
+                <select id='klasa_filter' name="klasa_filter" onchange="this.form.submit()">
                     <?php if (!empty($allClass)): ?>
                         <?php foreach(array_unique($allClass) as $osoba): ?>
                             <option value="<?= htmlspecialchars($osoba) ?>" <?=($Klasa != '' and htmlspecialchars($osoba) == $Klasa) ? 'selected' : "" ?>> <?= htmlspecialchars($osoba)?></option>
@@ -588,7 +601,8 @@ if ($conn->connect_errno != 0) {
             </form>
             <?php if ($_SESSION['Rola_user'] == 'Admin') : ?>
             <form action="" method="post">
-                <select name="rola_filter" onchange="this.form.submit()">
+                <label for="rola_filter">Rola:</label>
+                <select id="rola_filter" name="rola_filter" onchange="this.form.submit()">
                     <?php if (!empty($allRoles)): ?>
                         <?php foreach(array_unique($allRoles) as $RolaK): ?>
                             <option value="<?= htmlspecialchars($RolaK) ?>" <?=($Rola != '' and htmlspecialchars($RolaK) == $Rola) ? 'selected' : "" ?>> <?= htmlspecialchars($RolaK)?></option>
@@ -621,7 +635,7 @@ if ($conn->connect_errno != 0) {
                             }
                         ?>
                     <?php endif; ?>
-                    <th>Actions</th>
+                    <th>Akcje</th>
                     <th>Średnia</th>
                     <th>Średnia Roczna</th>
                 </tr>
@@ -671,13 +685,13 @@ if ($conn->connect_errno != 0) {
                                                 <input type="hidden" name="grade_id" value="<?= $index ?>">
                                                 <input type="number" placeholder='Ocena' min="1" max = "6" name="edited_grade" id="edited_grade_<?= $gradeFormId ?>" value="<?= htmlspecialchars($ocena['ocena']) ?>" class="liczba">
                                                 <input type="number" placeholder='Waga' name="waga" value="<?= htmlspecialchars($ocena['waga']) ?>" class="liczba">
-                                                <button type="submit">Edit</button>
+                                                <button type="submit">Edytuj</button>
                                             </form>
                                             <form action="delete_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post">
                                                 <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
                                                 <input type="hidden" name="subject" value="<?= $subject ?>">
                                                 <input type="hidden" name="grade_id" value="<?= $index ?>">
-                                                <button type="submit">Delete</button>
+                                                <button type="submit">Usuń</button>
                                             </form>
                                         </div>
                                         <?php
@@ -728,13 +742,13 @@ if ($conn->connect_errno != 0) {
                                             <input type="hidden" name="grade_id" value="<?= $index ?>">
                                             <input type="number" placeholder='Ocena' min="1" max="6" name="edited_grade" id="edited_grade_<?= $gradeFormId ?>" value="<?= htmlspecialchars($ocena['ocena']) ?>" class="liczba">
                                             <input type="number" placeholder='Waga' name="waga" value="<?= htmlspecialchars($ocena['waga']) ?>" class="liczba">
-                                            <button type="submit">Edit</button>
+                                            <button type="submit">Edytuj</button>
                                         </form>
                                         <form action="delete_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post">
                                             <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
                                             <input type="hidden" name="subject" value="<?= $subject ?>">
                                             <input type="hidden" name="grade_id" value="<?= $index ?>">
-                                            <button type="submit">Delete</button>
+                                            <button type="submit">Usuń</button>
                                         </form>
                                     </div>
                                     <?php
@@ -1241,7 +1255,7 @@ if ($conn->connect_errno != 0) {
             });
         </script>
     </div>
-    
+    <?php include 'footer.php' ?>
 </body>
 </html>
 <?php $conn->close(); ?>

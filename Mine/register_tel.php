@@ -3,7 +3,7 @@ session_start();
 require_once("db.php");
 
 
-if(isset($_SESSION['Login']) && $_SESSION['Login']){
+if($_SESSION['Login']){
     header('Location: welcome.php');
     exit();
 }
@@ -11,47 +11,47 @@ $conn = @new mysqli($server_name, $user_name, $password, $database);
 
 if ($conn->connect_errno != 0) {
     echo $conn->connect_errno . " ";
-    echo '<br> <a href="zaloguj_rejstracja.php?register=1">Wróć do strony rejestrowania</a>';
+    echo '<br> <a href="rejstracja.php">Wróć do strony rejestrowania</a>';
 } else {
     $is_okay = true;
-    if(isset($_POST['imie'])){
-        $Imie = $_POST['imie'];
+    if(isset($_POST['Imie'])){
+        $Imie = $_POST['Imie'];
         $_SESSION['checking_imie'] = $Imie;
         if(!preg_match("/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/", $Imie)){
-            $_SESSION['imie_e'] = 'Imię może składać się tylko z liter';
+            $_SESSION['Imie_e'] = 'Imię może składać się tylko z liter';
             $is_okay = false;
         }
         if(str_contains($Imie," ")){
-            $_SESSION['imie_e'] = 'Imie nie może posiadać spacji';
+            $_SESSION['Imie_e'] = 'Imie nie może posiadać spacji';
             $is_okay = false;
         }
         if($Imie == ''){
-            $_SESSION['imie_e'] = 'Nie podano Imienia';
+            $_SESSION['Imie_e'] = 'Nie podano Imienia';
             $is_okay = false;
         }
     }else{
         $is_okay = false;
     }
-    if(isset($_POST['nazwisko'])){
-        $Nazwisko = $_POST['nazwisko'];
+    if(isset($_POST['Nazwisko'])){
+        $Nazwisko = $_POST['Nazwisko'];
         $_SESSION['checking_nazwisko'] = $Nazwisko;
         if(!preg_match("/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/", $Nazwisko)){
-            $_SESSION['nazwisko_e'] = 'Nazwisko może składać się tylko z liter';
+            $_SESSION['Nazwisko_e'] = 'Nazwisko może składać się tylko z liter';
             $is_okay = false;
         }
         if(str_contains($Nazwisko," ")){
-            $_SESSION['nazwisko_e'] = 'Nazwisko nie może posiadać spacji';
+            $_SESSION['Nazwisko_e'] = 'Nazwisko nie może posiadać spacji';
             $is_okay = false;
         }
         if($Nazwisko == ''){
-            $_SESSION['nazwisko_e'] = 'Nie podano Nazwiska';
+            $_SESSION['Nazwisko_e'] = 'Nie podano Nazwiska';
             $is_okay = false;
         }
     }else{
         $is_okay = false;
     }
-    if(isset($_POST['email'])){
-        $Email = $_POST['email'];
+    if(isset($_POST['E-mail'])){
+        $Email = $_POST['E-mail'];
         $_SESSION['checking_email'] = $Email;
         if(!filter_var($Email, FILTER_VALIDATE_EMAIL)){
             $_SESSION['email_e'] = 'Błędna struktura E-mail';
@@ -96,19 +96,19 @@ if ($conn->connect_errno != 0) {
 
     if(isset($_POST['regulamin'])){
         $Regulamin = $_POST['regulamin'];
-        $_SESSION['checking_checkbox'] = $Regulamin;
+        $_SESSION['checking_chceckbox'] = $Regulamin;
         if(!$Regulamin){
             $_SESSION['checkbox_e'] = 'Zapoznanie się z regulaminem jest wymagane';
             $is_okay = false;
         }
     }else{
         $is_okay = false;
-        unset($_SESSION['checking_checkbox']);
+        unset($_SESSION['checking_chceckbox']);
         $_SESSION['checkbox_e'] = 'Zapoznanie się z regulaminem jest wymagane';
     }
 
     if(!$is_okay){
-        header('Location: zaloguj_rejstracja.php?register=1');
+        header('Location: rejstracja.php');
         exit();
     }
 
@@ -121,7 +121,7 @@ if ($conn->connect_errno != 0) {
 
     if ($result->num_rows == 1) {
         $_SESSION['alert'] = 'Urzytkownik z tym adresem E-mail znajduje się w bazie danych';
-        header('Location: zaloguj_rejstracja.php?register=1');
+        header('Location: rejstracja.php');
         exit();
     } else {
         $Imie = strtolower($Imie);
@@ -130,7 +130,7 @@ if ($conn->connect_errno != 0) {
         $Imie[0] = strtoupper($Imie[0]);
         $Nazwisko[0] = strtoupper($Nazwisko[0]);
 
-        $sql1 = "INSERT INTO users VALUES (NULL,'$Imie','$Nazwisko',NULL,'$Email','$Haslo', 'Uczen', NULL, '')";
+        $sql1 = "INSERT INTO users VALUES (NULL,'$Imie','$Nazwisko',NULL,'$Email','$Haslo', 'Uczen', NULL)";
         $result1 = $conn->query($sql1);
 
         unset($_SESSION['cheaking_imie']);
@@ -153,7 +153,7 @@ if ($conn->connect_errno != 0) {
         $result3 = $conn->query($sql3);
 
         $_SESSION['alert_l'] = 'Utworzono Konto, zaloguj się na podane dane';
-        header('Location: zaloguj_rejstracja.php');
+        header('Location: zaloguj.php');
         exit();
     }
 

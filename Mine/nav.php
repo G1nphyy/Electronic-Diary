@@ -2,9 +2,10 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <div class="nav" onclick="openNav()">
-            &#9776;
+<?= isset($_SESSION['Icon_user']) && $_SESSION['Icon_user'] == '' ? '&#9776;' : '<img src="'.htmlspecialchars($_SESSION['Icon_user']). '"></img>' ?>
 </div>
 <div id="mySidenav" class="sidenav">
+        <div class="content-nav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
             <a href="welcome.php">Strona główna</a>
             <?php if($_SESSION['Rola_user'] !== 'Uczen'){
@@ -17,13 +18,17 @@
                 <a href="Oceny_ucznia.php">Moje Oceny</a>
                 <a href="frekwencja_ucznia.php">Frekwencja</a>
             <?php endif; ?>
+            <a href="index.php">Aktualności</a>
             <a href="Tests.php">Sprawdziany</a>
             <a href="Wiadomosci.php">Wiadomosci</a>
             <a href="Info.php">Informacje</a>
+        </div>
+        <div class="logout">
             <a href="logout.php">Wyloguj się</a>
+        </div>
 </div>
 <script>
-            function sleep(ms) {
+        function sleep(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
@@ -70,7 +75,10 @@
         }
 </script>
 <style>
-
+    .content-nav{
+        max-height: 70dvh;
+        overflow: auto;
+    }
     header {
         background-color: #333;
         color: #fff;
@@ -110,6 +118,12 @@
         padding: 10px 17px;
         transition: 0.3s;
         border-radius: 50%;
+    }
+    .nav img{
+        position: relative;
+        padding-top: 7px;
+        width: 2rem;
+        height: 2rem;
     }
     .sidenav {
         height: 100%;
@@ -151,7 +165,7 @@
     .sidenav a:hover {
         color: #f1f1f1; 
     }
-    .sidenav a:last-of-type{
+    .sidenav .logout a {
         text-align: center;
         bottom: 100px;
         margin: 0 70px;

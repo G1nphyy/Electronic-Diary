@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!$_SESSION['Login']){
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
 }
 
 require_once 'db.php';
@@ -58,7 +58,7 @@ if ($result) {
     $rows = $result->fetch_all(MYSQLI_ASSOC);
 
     $subjectColumns = !empty($rows) ? array_keys($rows[0]) : [];
-    $subjectColumns = array_slice($subjectColumns, 10);
+    $subjectColumns = array_slice($subjectColumns, 11);
 } else {
     echo "Error retrieving data: " . $conn->error;
     $rows = [];
@@ -154,9 +154,61 @@ $conn->close();
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
     <title>Sprawdziany</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @media screen and (max-width: 850px) {
+            table {
+                width: 100%;
+                font-size: 14px;
+            }
+            th, td {
+                padding: 5px;
+            }
+            .btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 8px 16px;
+                border-radius: 5px;
+                font-size: 16px;
+            }
+            #filter {
+                width: 100%;
+                margin: 10px 0;
+            }
+            .dodaj_test {
+                width: 90%;
+            }
+        }
+
+        @media screen and (max-width: 633px) {
+            body > div:first-of-type{
+                display: flex;
+                flex-direction: column;
+            }
+            table {
+                font-size: 12px;
+            }
+            th, td {
+                padding: 4px;
+            }
+            .btn {
+                bottom: 20px;
+                right: 20px;
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            th, td {
+                padding: 3px;
+            }
+        }
+    </style>
     <style>
         body {
             margin: 0;
@@ -449,9 +501,16 @@ $conn->close();
             <input type="hidden" id="edit_test_id" name="test_id">
             <label for="przedmiot">Przedmiot:</label>
             <select id="przedmiot" name="przedmiot" required>
-                <?php foreach($subjectColumns as $subject):?>
+                <?php
+                    $array = explode(',',$_SESSION['Czego_uczy_user']) ;
+                ?>
+
+                <?php if($_SESSION['Rola_user'] == 'Admin'){ foreach($subjectColumns as $subject):?>
                     <option value="<?= $subject ?>" selected><?= $subject ?></option>
-                <?php endforeach;?>     
+                <?php endforeach;}?>
+                <?php if($_SESSION['Rola_user'] == 'Nauczyciel'){ foreach($array as $subject):?>
+                    <option value="<?= $subject ?>" selected><?= $subject ?></option>
+                <?php endforeach;}?>   
             </select>
             <br><br>
             <label for="kategoria">Kategoria:</label>
@@ -515,9 +574,16 @@ $conn->close();
             <input type="hidden" name="action" value="add_test">
             <label for="przedmiot">Przedmiot:</label>
             <select id="przedmiot" name="przedmiot" required>
-                <?php foreach($subjectColumns as $subject):?>
+                <?php
+                    $array = explode(',',$_SESSION['Czego_uczy_user']) ;
+                ?>
+
+                <?php if($_SESSION['Rola_user'] == 'Admin'){ foreach($subjectColumns as $subject):?>
                     <option value="<?= $subject ?>" selected><?= $subject ?></option>
-                <?php endforeach;?>     
+                <?php endforeach;}?>
+                <?php if($_SESSION['Rola_user'] == 'Nauczyciel'){ foreach($array as $subject):?>
+                    <option value="<?= $subject ?>" selected><?= $subject ?></option>
+                <?php endforeach;}?>
             </select>
             <br><br>
             <label for="kategoria">Kategoria:</label>

@@ -25,6 +25,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header('Location: frekfencja.php');
     exit;
 } else {
-    header('Location: index.php');
+    header('Location: zaloguj.php');
     exit;
 }

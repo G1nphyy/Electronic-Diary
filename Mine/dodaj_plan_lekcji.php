@@ -1,11 +1,11 @@
 <?php 
 session_start();
 if (!$_SESSION['Login']) {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 if($_SESSION['Rola_user'] == 'Uczen'){
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
 }
 
 require_once 'db.php';
@@ -60,12 +60,13 @@ if ($result) {
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0; 
             display: flex;
-            justify-content: center;
-            align-items: flex-start; 
-            height: 100vh;
+            justify-content: start;
+            margin: 0;
+            padding: 0;
+            padding-top: 120px;
+            align-items: center; 
+            flex-direction: column;
             background-color: #f7f7f7;
         }
         .container {
@@ -75,7 +76,7 @@ if ($result) {
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             max-width: 1000px;
             width: 100%;
-            margin: 150px 0; 
+            margin-bottom: 50px;
         }
         .container h1 {
             text-align: center;
@@ -145,6 +146,19 @@ if ($result) {
         }
         .my_plan:hover{
             background-color: #218838;
+        }
+        .table-container {
+            overflow: auto;
+        }
+        @media screen and (max-width: 1000px) {
+            .container{
+                width: 90%;
+            }
+        }
+        @media screen and (max-width: 350px) {
+            header h1{
+                margin-right: 100px;
+            }
         }
     </style>
     <script>
@@ -265,7 +279,7 @@ if ($result) {
                 <label for="klasa">Klasa:</label>
                 <input type="text" id="klasa" name="klasa" required>
             </div>
-            <div class="tablecontainer">
+            <div class="table-container">
                 <table>
                     <thead>
                         <tr>
@@ -334,6 +348,6 @@ if ($result) {
         </form>
         <?php endif; ?>
     </div>
-
+    <?php include 'footer.php' ?>
 </body>
 </html>

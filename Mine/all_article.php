@@ -7,7 +7,7 @@ require_once 'db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDDziennik</title>
+    <title>DDDziennik - Wpisy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         * {
@@ -154,10 +154,6 @@ require_once 'db.php';
         a.closebtn{
             padding: 0 18px !important;
         }
-        .nav img{
-            height: 2rem !important;
-            width: auto !important;
-        }
         @media screen and (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -194,28 +190,6 @@ require_once 'db.php';
             }
             footer{
                 font-size: 0.8em !important;
-            }
-            .auth{
-                display: inline-block;
-                position: relative;
-                transform: translate(0, 0);
-            }
-            .login{
-                font-size: 1em;
-                font-family: inherit !important;
-                border: none;
-                background-color: transparent;
-                appearance: none !important;
-                text-decoration: none;
-                display: inline-block ;
-                color: #fff;
-                padding: 10px 15px;
-                transition: background-color 0.3s ease;
-                margin: 0;
-                border-radius: 5px;
-            }
-            .login:hover{
-                background-color: #555;
             }
         }
         <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
@@ -388,63 +362,25 @@ require_once 'db.php';
             <div class="auth">
                 <a class='login' href="zaloguj_rejstracja.php">Moje konto</a>
             </div>
-            <script>
-
-                
-
-                function loginbutton(){
-                    let login =document.querySelector('a.login');
-                    if (window.outerWidth <= 768){
-                        login.innerHTML = '';
-                        let i = document.createElement('i');
-                        i.className = 'fas fa-cog';
-                        login.appendChild(i);
-                        let j = ' Moje konto';
-                        login.append(j);
-                    }else{
-                        login.innerHTML = 'Moje konto';
-                    }
-                }
-                loginbutton();
-                window.addEventListener('resize', loginbutton)
-            </script>
         <?php endif; ?>
     </nav>
     <div class="container">
-        
         <?php 
-            $conn = @new mysqli($server_name, $user_name, $password, $database);
-            $sql = "SELECT * FROM ogloszenia ORDER BY data DESC LIMIT 1";
-            $result = $conn->query($sql);
-            if ($result) {
-                $ogloszenie = $result->fetch_assoc();
-                if ($ogloszenie){
-        ?>
+        $conn = @new mysqli($server_name, $user_name, $password, $database);
+        $sql = "SELECT * FROM ogloszenia ORDER BY data DESC";
+        $result = $conn->query($sql);
+        
+        while ($ogloszenie = $result->fetch_assoc()) {
+            ?>
             <div class="featured-article">
-                
                 <h2><?= htmlspecialchars($ogloszenie['tytul']) ?></h2>
                 <img src="<?= htmlspecialchars($ogloszenie['zdjecie_header']) ?>" alt="Nie udało się wczytać zdjęcia">
                 <p><?= htmlspecialchars($ogloszenie['tresc']) ?></p>
-                <a href="article.php?id=<?= htmlspecialchars($ogloszenie['id']) ?>" class="read-more-link">Czytaj Więcej <i class="fas fa-chevron-right"></i></a>
+                <a href="all_article_show.php?id=<?= htmlspecialchars($ogloszenie['id']) ?>" class="read-more-link">Czytaj Więcej <i class="fas fa-chevron-right"></i></a>
             </div>
-        <?php }} ?>
-        <div class="card">
-            <h2>Popularne ogłoszenia</h2>
-            <ul>
-                <?php 
-                    $sql = "SELECT * FROM ogloszenia WHERE is_popular = 1 LIMIT 3";
-                    $result = $conn->query($sql);
-                    $rows = [];
-                    while($row = $result->fetch_assoc()){
-                        $rows[] = $row;
-                    }
-                    foreach ($rows as $row){
-                ?>
-                <li><a href="article.php?id=<?= htmlspecialchars($row['id']) ?>"><?=$row['tytul']?></a></li>
-                <?php } ?>
-            </ul>
-        </div>
+        <?php } ?>
     </div>
+
     <?php include 'footer.php'; ?>
 </body>
 </html>

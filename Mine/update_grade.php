@@ -2,7 +2,7 @@
 session_start();
 
 if (!$_SESSION['Login'] || $_SESSION['Rola_user'] == 'Uczen' ) {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 

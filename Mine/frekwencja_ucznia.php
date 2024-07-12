@@ -62,8 +62,9 @@ $conn->close();
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f9f9f9;
             margin: 120px 0 0 0 ;
-            padding: 20px;
+            padding: 20px 0 0 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
         }
@@ -130,6 +131,28 @@ $conn->close();
         .filters button:hover {
             background-color: #45a049;
         }
+        @media screen and (max-width: 644px) {
+            .container form{
+                display: grid;
+                grid-template: '1fr 1fr 1fr 1fr';
+                gap: 5px;
+            }
+        }
+        @media screen  and (max-width: 420px){
+            .container form{
+                display: grid;
+                grid-template: '1fr 1fr';
+                gap: 5px;
+            }    
+            .table-container{
+                min-width: 90%;
+                overflow: auto;
+            }
+            header h1{
+                padding-right: 100px;
+                text-wrap: wrap;
+            }
+        }
     </style>
 </head>
 <body>
@@ -158,25 +181,43 @@ $conn->close();
 
             <button type="submit">Filtruj</button>
         </form>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Status</th>
-                    <th>Lekcja</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($attendance_data as $row): ?>
+        <div class="table-container">
+            <table>
+                <thead>
                     <tr>
-                        <td><?php echo htmlspecialchars($row['date']); ?></td>
-                        <td><?php echo htmlspecialchars($row['status']); ?></td>
-                        <td><?php echo htmlspecialchars($row['lekcja']); ?></td>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Lekcja</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($attendance_data as $row): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['date']); ?></td>
+                            <td><?php echo htmlspecialchars($row['status']); ?></td>
+                            <td><?php echo htmlspecialchars($row['lekcja']); ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
+    <?php include 'footer.php' ?>
+    <script>
+        window.addEventListener('resize', function() {
+        let subjects = document.querySelectorAll('.container');
+        let footer = document.querySelector('footer');
+        
+        if (footer) {
+            let footerStyles = window.getComputedStyle(footer);
+            
+            let sizeOfFooter = footerStyles.height;
+            
+            subjects.forEach(function(subject) {
+                subject.style.marginBottom =sizeOfFooter;
+            });
+        }
+    });
+    </script>
 </body>
 </html>

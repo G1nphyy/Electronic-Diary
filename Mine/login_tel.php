@@ -11,11 +11,11 @@ $conn = @new mysqli($server_name, $user_name, $password, $database);
 
 if ($conn->connect_errno != 0) {
     echo $conn->connect_errno . " ";
-    echo '<br> <a href="zaloguj_rejstracja.php">Wróć do strony logowania</a>';
+    echo '<br> <a href="zaloguj.php">Wróć do strony logowania</a>';
 } else {
     $is_okay = true;
-    if (isset($_POST['login_l'])) {
-        $login = $_POST['login_l'];
+    if (isset($_POST['login'])) {
+        $login = $_POST['login'];
         $_SESSION['checking_login_l'] = $login;
         if (!filter_var($login, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['login_el'] = 'Błędna składnia e-mail';
@@ -28,8 +28,8 @@ if ($conn->connect_errno != 0) {
     }else{
         $is_okay = false;
     }
-    if (isset($_POST['haslo_l'])) {
-        $haslo = $_POST['haslo_l'];
+    if (isset($_POST['haslo'])) {
+        $haslo = $_POST['haslo'];
         $_SESSION['checking_haslo_l'] = $haslo;
         if($haslo == ''){
             $_SESSION['haslo_el'] = 'Nie podano hasła';
@@ -40,7 +40,7 @@ if ($conn->connect_errno != 0) {
     }
 
     if (!$is_okay) {
-        header('Location: zaloguj_rejstracja.php');
+        header('Location: zaloguj.php');
         exit();
     }
 
@@ -61,18 +61,18 @@ if ($conn->connect_errno != 0) {
             $_SESSION['Czego_uczy_user'] = $wiersz['Czego_uczy'];
             $_SESSION['user_id'] = $wiersz['id'];
             $_SESSION['Klasa_user'] = $wiersz['Klasa'];
-            $_SESSION['Icon_user'] = $wiersz['icon'];
             $_SESSION['Login'] = true;
+            $_SESSION['Icon_user'] = $wiersz['icon'];
             header('Location: welcome.php');
             exit();
         }else{
             $_SESSION['haslo_el'] = 'Błędne hasło';
-            header('Location: zaloguj_rejstracja.php');
+            header('Location: zaloguj.php');
             exit();
         }
     } else {
         $_SESSION['alert_l'] = 'Nie odnaleziono urzytkownika w bazie danych';
-        header('Location: zaloguj_rejstracja.php');
+        header('Location: zaloguj.php');
         exit();
     }
 }

@@ -7,7 +7,7 @@ require_once 'db.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDDziennik</title>
+    <title>DDDziennik - O nas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         * {
@@ -154,10 +154,6 @@ require_once 'db.php';
         a.closebtn{
             padding: 0 18px !important;
         }
-        .nav img{
-            height: 2rem !important;
-            width: auto !important;
-        }
         @media screen and (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -195,32 +191,9 @@ require_once 'db.php';
             footer{
                 font-size: 0.8em !important;
             }
-            .auth{
-                display: inline-block;
-                position: relative;
-                transform: translate(0, 0);
-            }
-            .login{
-                font-size: 1em;
-                font-family: inherit !important;
-                border: none;
-                background-color: transparent;
-                appearance: none !important;
-                text-decoration: none;
-                display: inline-block ;
-                color: #fff;
-                padding: 10px 15px;
-                transition: background-color 0.3s ease;
-                margin: 0;
-                border-radius: 5px;
-            }
-            .login:hover{
-                background-color: #555;
-            }
         }
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
 
-            form[action="upload_image.php"] {
+            form {
                 position: fixed;
                 top: 50%;
                 left: 50%;
@@ -236,9 +209,9 @@ require_once 'db.php';
                 overflow: auto; 
             }
 
-            form[action="upload_image.php"] input[type="text"],form[action="upload_image.php"] textarea,
-            form[action="upload_image.php"] input[type="file"],
-            form[action="upload_image.php"] input[type="submit"] {
+            form input[type="text"],form textarea,
+            form input[type="file"],
+            form input[type="submit"] {
                 width: calc(100% - 20px); 
                 margin-bottom: 10px;
                 padding: 10px; 
@@ -248,23 +221,23 @@ require_once 'db.php';
                 box-sizing: border-box; 
             }
 
-            form[action="upload_image.php"] input[type="submit"] {
+            form input[type="submit"] {
                 background-color: #4CAF50; 
                 color: white; 
                 border: none; 
                 cursor: pointer;
             }
 
-            form[action="upload_image.php"] input[type="submit"]:hover {
+            form input[type="submit"]:hover {
                 background-color: #45a049; 
             }
 
-            form[action="upload_image.php"] label {
+            form label {
                 display: block; 
                 margin-bottom: 5px; 
                 text-align: left; 
             }
-            form[action="upload_image.php"] textarea{
+            form textarea{
                 resize: vertical;
                 font-family: inherit;
             }
@@ -293,80 +266,8 @@ require_once 'db.php';
                 background-color: #f01111a1;
                 color: white;
             }
-        <?php endif; ?>
 
     </style>
-    <script>
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
-            function addForm() {
-                if (!document.body.querySelector('form')){
-                    const form = document.createElement('form');
-                    form.action = 'upload_image.php';
-                    form.method = 'post';
-                    form.enctype = 'multipart/form-data';
-
-                    const header =document.createElement('div');
-                    header.className = 'headerr';
-
-                    const h2 = document.createElement('h2');
-                    h2.innerHTML = 'Dodaj wpis';
-                    header.appendChild(h2);
-                    const close = document.createElement('div');
-                    close.innerHTML = '&times;'
-                    close.className = 'close';
-                    close.addEventListener('click', function(){
-                        form.style.display = 'none';
-                    })
-                    header.appendChild(close);
-
-                    form.appendChild(header);
-
-                    const label = document.createElement('label');
-                    label.innerText = 'Zdjęcie Tytłuowe: ';
-                    label.for = 'zdjecie_header';
-                    const inputImageHeader = document.createElement('input');
-                    inputImageHeader.type = 'file';
-                    inputImageHeader.name = 'zdjecie_header';
-                    inputImageHeader.id = 'zdjecie_header';
-                    inputImageHeader.accept = 'image/png, image/jpeg';
-                    form.appendChild(label);
-                    form.appendChild(inputImageHeader);
-
-                    const label2 = document.createElement('label');
-                    label2.innerText = 'Zdjęcia: ';
-                    label2.for = 'gallery'
-                    const inputGallery = document.createElement('input');
-                    inputGallery.type = 'file';
-                    inputGallery.name = 'gallery[]';
-                    inputGallery.id = 'gallery';
-                    inputGallery.accept = 'image/png, image/jpeg';
-                    inputGallery.multiple = true;
-                    form.appendChild(label2);
-                    form.appendChild(inputGallery);
-
-                    const inputTytul = document.createElement('input');
-                    inputTytul.type = 'text';
-                    inputTytul.name = 'tytul';
-                    inputTytul.placeholder = 'Tytuł...';
-                    form.appendChild(inputTytul);
-
-                    const inputTresc = document.createElement('textarea');
-                    inputTresc.name = 'tresc';
-                    inputTresc.placeholder = 'Treść..';
-                    form.appendChild(inputTresc);
-
-                    const inputSubmit = document.createElement('input');
-                    inputSubmit.type = 'submit';
-                    inputSubmit.value = 'Wyślij';
-                    form.appendChild(inputSubmit);
-
-                    document.body.appendChild(form);
-                }else if(document.body.querySelector('form') && document.body.querySelector('form').style.display == 'none'){
-                    document.body.querySelector('form').style.display = 'block';
-                }
-            }
-        <?php endif; ?>
-    </script>
 </head>
 <body>
     <header>
@@ -381,69 +282,63 @@ require_once 'db.php';
         <a href="all_article.php"><i class="fas fa-pen"></i> Wpisy</a>
         <a href="contact.php"><i class="fas fa-phone"></i> Kontakt</a>
         <a href="about.php"><i class="fas fa-info-circle"></i> O nas</a>
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
-            <button onclick="addForm()"><i class="fas fa-edit"></i> Dodaj Wpis</button>
-        <?php endif; ?>
         <?php if (!isset($_SESSION['Login']) || $_SESSION['Login'] == false) : ?>
             <div class="auth">
                 <a class='login' href="zaloguj_rejstracja.php">Moje konto</a>
             </div>
-            <script>
-
-                
-
-                function loginbutton(){
-                    let login =document.querySelector('a.login');
-                    if (window.outerWidth <= 768){
-                        login.innerHTML = '';
-                        let i = document.createElement('i');
-                        i.className = 'fas fa-cog';
-                        login.appendChild(i);
-                        let j = ' Moje konto';
-                        login.append(j);
-                    }else{
-                        login.innerHTML = 'Moje konto';
-                    }
-                }
-                loginbutton();
-                window.addEventListener('resize', loginbutton)
-            </script>
         <?php endif; ?>
     </nav>
     <div class="container">
+        <section id="about-us">
+            <h2>O Nasza Firma</h2>
+            <p>
+                Nasza firma jest dynamicznym podmiotem działającym na rynku mediów od ponad 10 lat. Specjalizujemy się w produkcji wysokiej jakości treści dziennikarskich, które informują, inspirują i angażują naszych czytelników. Nasz zespół składa się z doświadczonych dziennikarzy, redaktorów oraz specjalistów ds. treści, którzy pracują z pasją i zaangażowaniem.
+            </p>
+            <p>
+                Misją naszej firmy jest dostarczanie rzetelnych informacji oraz głębokich analiz, które pomagają naszym czytelnikom zrozumieć współczesny świat. Jesteśmy dumni z naszych osiągnięć i dążymy do ciągłego rozwoju, aby sprostać oczekiwaniom naszych odbiorców.
+            </p>
+        </section>
         
-        <?php 
-            $conn = @new mysqli($server_name, $user_name, $password, $database);
-            $sql = "SELECT * FROM ogloszenia ORDER BY data DESC LIMIT 1";
-            $result = $conn->query($sql);
-            if ($result) {
-                $ogloszenie = $result->fetch_assoc();
-                if ($ogloszenie){
-        ?>
-            <div class="featured-article">
-                
-                <h2><?= htmlspecialchars($ogloszenie['tytul']) ?></h2>
-                <img src="<?= htmlspecialchars($ogloszenie['zdjecie_header']) ?>" alt="Nie udało się wczytać zdjęcia">
-                <p><?= htmlspecialchars($ogloszenie['tresc']) ?></p>
-                <a href="article.php?id=<?= htmlspecialchars($ogloszenie['id']) ?>" class="read-more-link">Czytaj Więcej <i class="fas fa-chevron-right"></i></a>
-            </div>
-        <?php }} ?>
-        <div class="card">
-            <h2>Popularne ogłoszenia</h2>
-            <ul>
-                <?php 
-                    $sql = "SELECT * FROM ogloszenia WHERE is_popular = 1 LIMIT 3";
-                    $result = $conn->query($sql);
-                    $rows = [];
-                    while($row = $result->fetch_assoc()){
-                        $rows[] = $row;
-                    }
-                    foreach ($rows as $row){
-                ?>
-                <li><a href="article.php?id=<?= htmlspecialchars($row['id']) ?>"><?=$row['tytul']?></a></li>
-                <?php } ?>
-            </ul>
-        </div>
+        <section id="our-journal">
+            <h2>Nasz Dziennik</h2>
+            <p>
+                Nasz dziennik to platforma, na której publikujemy różnorodne artykuły i reportaże na tematy społeczne, polityczne, kulturalne oraz technologiczne. Niezależność redakcyjna oraz wysoki standard etyczny są dla nas fundamentem naszej działalności. Stawiamy na jakość, rzetelność i zrozumienie dla naszych czytelników.
+            </p>
+            <p>
+                Nasz zespół dziennikarzy pracuje z pasją, aby dostarczać treści, które są nie tylko informacyjne, ale także inspirujące i edukacyjne. Zapraszamy do regularnego odwiedzania naszego dziennika, aby być na bieżąco z najważniejszymi wydarzeniami i tematami dnia.
+            </p>
+        </section>
+        
+        <section id="mission-vision">
+            <h2>Nasza Misja i Wizja</h2>
+            <p>
+                Naszą misją jest tworzenie treści, które angażują, inspirować i informują naszych czytelników. Dążymy do tego, aby nasz dziennik był źródłem wartościowych informacji oraz miejscem dialogu i refleksji.
+            </p>
+            <p>
+                Naszą wizją jest rozwijanie się jako ceniony podmiot na rynku mediów, który ma wpływ na debatę publiczną oraz wspiera społeczność w zrozumieniu złożonych problemów współczesności.
+            </p>
+        </section>
+        
+        <section id="team">
+            <h2>Nasz Zespół</h2>
+            <p>
+                Nasz zespół składa się z pasjonatów, którzy kierują się profesjonalizmem i etyką zawodową. Dzięki różnorodnym doświadczeniom oraz specjalistycznym umiejętnościom, jesteśmy w stanie dostarczać treści na najwyższym poziomie. Chcemy, aby nasza praca miała realny wpływ na naszych czytelników i otaczały nas wartości takie jak uczciwość, otwartość i odpowiedzialność.
+            </p>
+            <p>
+                Każdy członek naszego zespołu wnieś wielkie zaangażowanie w tworzenie wartościowych treści i jesteśmy dumni z każdego projektu, który realizujemy razem.
+            </p>
+        </section>
+        
+        <section id="contact">
+            <h2>Kontakt</h2>
+            <p>
+                Zapraszamy do kontaktu z nami w sprawie współpracy, pytań czy sugestii. Jesteśmy otwarci na dialog i chętnie odpowiemy na wszelkie zapytania.
+            </p>
+            <p>
+                E-mail: dddziennik@gmail.com<br>
+                Telefon: +48 123 456 789
+            </p>
+        </section>
     </div>
     <?php include 'footer.php'; ?>
 </body>

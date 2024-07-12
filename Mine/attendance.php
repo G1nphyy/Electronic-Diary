@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['Login']) || $_SESSION['Rola_user'] == 'Uczen') {
-    header('Location: Index.php');
+    header('Location: zaloguj.php');
     exit();
 }
 
@@ -147,7 +147,7 @@ if ($conn->connect_errno != 0) {
                 <th>Data</th>
                 <th>Lekcja</th>
                 <th>Status</th>
-                <th>Update</th>
+                <th>Zaktualizuj</th>
             </tr>
             <?php foreach ($attendance as $record): ?>
             <tr>
@@ -173,5 +173,6 @@ if ($conn->connect_errno != 0) {
         </table>
         <a href="frekfencja.php" class="back-button">Powrót do frekwencji</a>
     </div>
+    <?php include 'footer.php' ?>
 </body>
 </html>
