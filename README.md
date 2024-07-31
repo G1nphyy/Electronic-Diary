@@ -10,8 +10,7 @@ The **Electronic Diary** is a journal adapted for one school. You can do all the
 | ![obraz](https://github.com/user-attachments/assets/10f1665b-7891-4dd6-bf3f-5a4bfaef578a) | ![obraz](https://github.com/user-attachments/assets/a0b83e3d-1348-42e9-a950-0afef5f08b4f) | ![obraz](https://github.com/user-attachments/assets/9e3c2c4b-6a7a-4766-81df-6a972d426be2) |
 | ![obraz](https://github.com/user-attachments/assets/c08139a4-ba83-4802-8b47-82d65fe75304) | ![obraz](https://github.com/user-attachments/assets/9c8b7731-a705-42c2-853f-d24ba58ad008) | ![obraz](https://github.com/user-attachments/assets/fa650103-846b-4d79-811d-287a8cf2e176) |
 | ![obraz](https://github.com/user-attachments/assets/b05b2a84-f34a-4445-a607-64e1d7f60884) | ![obraz](https://github.com/user-attachments/assets/54fa47b1-b1ea-4b30-bea9-d180d59f25bc) | ![obraz](https://github.com/user-attachments/assets/afc8ff61-f313-48fe-8257-7daa6fba7744) |
-| ![obraz](https://github.com/user-attachments/assets/b302a14a-fdfb-4e0c-a851-db4b8e571034) | ![obraz](https://github.com/user-attachments/assets/05ae8b07-50a5-4dfb-8b9e-d39f6a094599) | ![obraz](https://github.com/user-attachments/assets/bcb44e43-8c72-4c15-ae25-bc4c1f3e0449)
- |
+| ![obraz](https://github.com/user-attachments/assets/b302a14a-fdfb-4e0c-a851-db4b8e571034) | ![obraz](https://github.com/user-attachments/assets/05ae8b07-50a5-4dfb-8b9e-d39f6a094599) | ![obraz](https://github.com/user-attachments/assets/bcb44e43-8c72-4c15-ae25-bc4c1f3e0449)|
 
 
 
