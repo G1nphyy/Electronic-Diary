@@ -39,25 +39,25 @@ To get started with the Electronic Diary, follow these steps:
 2. **Navigate to the project directory**:
     - For Unix-like systems:
       ```bash
-      cd Electronic-Diary/Mine
+      cd Electronic-Diary
       ```
     - For Windows:
       ```cmd
-      cd Electronic-Diary\Mine
+      cd Electronic-Diary
       ```
 
 3. **Move "Mine" to htdocs**:
     - For Unix-like systems:
       ```bash
-      mv ../Mine /path/to/xampp/htdocs/
+      mv Mine /path/to/xampp/htdocs/
       ```
     - For Windows Command Prompt:
       ```cmd
-      move ..\Mine C:\xampp\htdocs\
+      move Mine C:\xampp\htdocs\
       ```
     - For Windows PowerShell:
       ```powershell
-      Move-Item -Path ..\Mine -Destination C:\xampp\htdocs\
+      Move-Item -Path Mine -Destination C:\xampp\htdocs\
       ```
 
 4. **Remember to create the database in phpMyAdmin**:
