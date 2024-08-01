@@ -80,7 +80,7 @@ After installing and running the application, you can access it by navigating to
   |----------|----------|----------|
   | Admin | adam@gmail.com | qwerty1234 |
   | Teacher | filip@gmail.com | qwerty1234 |
-  | Student | lex@gmail.com | qwerty1234 |
+  | Student | alex@gmail.com | qwerty1234 |
 
 ## My plans
 
