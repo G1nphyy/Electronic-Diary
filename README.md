@@ -84,7 +84,7 @@ After installing and running the application, you can access it by navigating to
 
 ## My plans
 
- - [ ] Add cancellation, postponement and replacement of lessons
+ - [x] Add cancellation, postponement and replacement of lessons
  - [ ] Make it Multi school
  - [x] Drink more coffee
 
