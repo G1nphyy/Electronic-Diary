@@ -18,7 +18,7 @@ unset($_SESSION['cheaking_login']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Witaj <?= htmlspecialchars($_SESSION['Imie_user']) ?>!</title>
+    <title>Witaj <?= $_SESSION['Imie_user'] ?>!</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -359,7 +359,7 @@ unset($_SESSION['cheaking_login']);
                                 $today = date('Y-m-d');
                                 $tommorow = date('Y-m-d', strtotime('+1 day'));
                                 $klasa = $_SESSION['Klasa_user'];
-                                $sql = "SELECT * FROM tests WHERE data = '$today' OR data = '$tommorow' and klasa = '$klasa' ORDER BY data ASC";
+                                $sql = "SELECT * FROM tests WHERE (data = '$today' OR data = '$tommorow') and klasa = '$klasa' ORDER BY data ASC";
                                 $result = $conn->query($sql);
                                 $rows = [];
                                 while($row = $result->fetch_assoc()) {

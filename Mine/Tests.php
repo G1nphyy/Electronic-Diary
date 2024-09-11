@@ -547,7 +547,7 @@ $conn->close();
             <select name="klasa" id="klasa">
                 <?php if (!empty($allClass)): ?>
                     <?php foreach(array_unique($allClass) as $osoba): ?>
-                        <option value="<?= htmlspecialchars($osoba) ?>"> <?= htmlspecialchars($osoba)?></option>
+                        <option value="<?= $osoba ?>"> <?= $osoba?></option>
                     <?php endforeach; ?>
                 <?php endif ?>
             </select>
@@ -620,7 +620,7 @@ $conn->close();
             <select name="klasa" id="klasa">
                 <?php if (!empty($allClass)): ?>
                     <?php foreach(array_unique($allClass) as $osoba): ?>
-                        <option value="<?= htmlspecialchars($osoba) ?>"> <?= htmlspecialchars($osoba)?></option>
+                        <option value="<?= $osoba ?>"> <?= $osoba?></option>
                     <?php endforeach; ?>
                 <?php endif ?>
             </select>

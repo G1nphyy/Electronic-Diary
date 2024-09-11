@@ -79,7 +79,7 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oceny <?php echo htmlspecialchars($_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']); ?></title>
+    <title>Oceny <?php echo $_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']; ?></title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -351,7 +351,7 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
 </head>
 <body>
     <header>
-        <h1>Oceny <?php echo htmlspecialchars($_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']); ?></h1>
+        <h1>Oceny <?php echo $_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']; ?></h1>
         <?php include 'nav.php'; ?>
     </header>
 

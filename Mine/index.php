@@ -423,7 +423,7 @@ require_once 'db.php';
             <div class="featured-article">
                 
                 <h2><?= htmlspecialchars($ogloszenie['tytul']) ?></h2>
-                <img src="<?= htmlspecialchars($ogloszenie['zdjecie_header']) ?>" alt="Nie udało się wczytać zdjęcia">
+                <img src="<?= $ogloszenie['zdjecie_header'] ?>" alt="Nie udało się wczytać zdjęcia">
                 <p><?= htmlspecialchars($ogloszenie['tresc']) ?></p>
                 <a href="article.php?id=<?= htmlspecialchars($ogloszenie['id']) ?>" class="read-more-link">Czytaj Więcej <i class="fas fa-chevron-right"></i></a>
             </div>
@@ -440,7 +440,7 @@ require_once 'db.php';
                     }
                     foreach ($rows as $row){
                 ?>
-                <li><a href="article.php?id=<?= htmlspecialchars($row['id']) ?>"><?=$row['tytul']?></a></li>
+                <li><a href="article.php?id=<?= htmlspecialchars($row['id']) ?>"><?=htmlspecialchars($row['tytul'])?></a></li>
                 <?php } ?>
             </ul>
         </div>

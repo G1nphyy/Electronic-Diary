@@ -96,7 +96,7 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
     
     <form action="register_tel.php" method="post">
         <h1>Zarejestruj się</h1>
-        <input type="text" name="Imie" placeholder="Imię" value="<?php echo isset($_SESSION['checking_imie']) ? htmlspecialchars($_SESSION['checking_imie']) : ''; ?>"><br>
+        <input type="text" name="Imie" placeholder="Imię" value="<?php echo isset($_SESSION['checking_imie']) ? $_SESSION['checking_imie'] : ''; ?>"><br>
         <?php
             if (isset($_SESSION['Imie_e'])) {
                 echo '<span class="error">' . $_SESSION['Imie_e'] . '</span>';
@@ -104,7 +104,7 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
             }
         ?>
         <br>
-        <input type="text" name="Nazwisko" placeholder="Nazwisko" value="<?php echo isset($_SESSION['checking_nazwisko']) ? htmlspecialchars($_SESSION['checking_nazwisko']) : ''; ?>"><br>
+        <input type="text" name="Nazwisko" placeholder="Nazwisko" value="<?php echo isset($_SESSION['checking_nazwisko']) ? $_SESSION['checking_nazwisko'] : ''; ?>"><br>
         <?php
             if (isset($_SESSION['Nazwisko_e'])) {
                 echo '<span class="error">' . $_SESSION['Nazwisko_e'] . '</span>';

@@ -574,7 +574,7 @@ if ($conn->connect_errno != 0) {
     <div class="container">
         <div class="filters">
             <form id="searchForm" method="post" action="">
-                <input id="oho" type="text" name="search" placeholder="Szukaj..." value="<?= htmlspecialchars($search) ?>">
+                <input id="oho" type="text" name="search" placeholder="Szukaj..." value="<?= $search ?>">
                 <button type="submit">Szukaj</button>
             </form>
             <form action="" method="post" id="filters">
@@ -768,7 +768,7 @@ if ($conn->connect_errno != 0) {
                                     <option value="Admin" <?= $osoba['Rola'] == 'Admin' ? 'selected' : '' ?>>Admin</option>
                                 </select>
                             </form>
-                            <?php endif; ?>
+                            <?php endif?>
                             <form action="add_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post" class="form-inline">
                                 <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
                                 <select name="subject_grade">
@@ -1056,7 +1056,7 @@ if ($conn->connect_errno != 0) {
 
                     ?>
                     <div class="grade-entry">
-                        <p><?= $row['Imie']. " ". $row["Nazwisko"]. " - ". $row['Klasa']?>:
+                        <p><?= htmlspecialchars($row['Imie']. " ". $row["Nazwisko"]. " - ". $row['Klasa'])?>:
                             <select name="grades[<?= $id ?>]" placeholder="Ocena">
                                 <option value="1">1</option>
                                 <option value="2">2</option>

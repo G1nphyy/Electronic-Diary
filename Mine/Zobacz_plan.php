@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?=$klasa == '' ? "Plan lekcji dla ".$row12['Imie']." ".$row12['Nazwisko'] : "Plan lekcji dla klasy ".$klasa ?></title>
+    <title><?=$klasa == '' ? "Plan lekcji dla ".htmlspecialchars($row12['Imie']." ".$row12['Nazwisko']) : "Plan lekcji dla klasy ".$klasa ?></title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -244,7 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
 </head>
 <body>
 <header>
-    <h1><?=@$klasa == '' ? "Plan lekcji dla ".@$row12['Imie']." ".@$row12['Nazwisko'] : "Plan lekcji dla klasy ".@$klasa ?></h1>
+    <h1><?=@$klasa == '' ? "Plan lekcji dla ".htmlspecialchars(@$row12['Imie']." ".@$row12['Nazwisko']) : "Plan lekcji dla klasy ".@$klasa ?></h1>
     <?php include "nav.php"?>
 </header>
 <?php if ($plan): ?>

@@ -145,9 +145,11 @@ if ($result->num_rows > 0) {
         .fullscreen-img .prev {
             left: 20px;
             user-select: none;
+            padding: 20px;
         }
 
         .fullscreen-img .next {
+            padding: 20px;
             right: 20px;
             user-select: none;
         }
@@ -387,7 +389,7 @@ if ($result->num_rows > 0) {
                 $sql = "SELECT * FROM users WHERE id = '$autor'";
                 $result = $conn->query($sql);
                 $author_info = $result->fetch_assoc();
-                echo '<span class="author">Autor: ' . $author_info['Imie'] . ' ' . $author_info['Nazwisko'] . '</span>';
+                echo '<span class="author">Autor: ' . htmlspecialchars($author_info['Imie'] . ' ' . $author_info['Nazwisko']) . '</span>';
                 if ($article['is_edited']){
                     echo '<span class="date">Data: ' . $article['data'] . " Data ostatniej edycji: ". $article['data_edited'] . '</span>';
                 }else{
