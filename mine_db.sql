@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Wrz 11, 2024 at 06:56 PM
+-- Generation Time: Wrz 18, 2024 at 05:56 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -247,6 +247,86 @@ ALTER TABLE `wiadomości`
 ALTER TABLE `attendance`
   ADD CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 COMMIT;
+
+CREATE TABLE `zmiany_plan_lekcji` (
+  `id` int(11) NOT NULL,
+  `rodzaj` text NOT NULL,
+  `data` text NOT NULL,
+  `klasa` text NOT NULL,
+  `co_sie_dzieje` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
+
+--
+-- Dumping data for table `zmiany_plan_lekcji`
+--
+
+INSERT INTO `zmiany_plan_lekcji` (`id`, `rodzaj`, `data`, `klasa`, `co_sie_dzieje`) VALUES
+(4, 'Odwolaj', '2024-08-09', '1A', '9 4'),
+(5, 'Przesun', '2024-08-10', '1A', '9 2024-08-10 8'),
+(7, 'Zastepstwo', '2024-08-11', '1A', '9 2 Angielski 11');
+
+--
+-- Indeksy dla zrzutów tabel
+--
+
+--
+-- Indeksy dla tabeli `zmiany_plan_lekcji`
+--
+ALTER TABLE `zmiany_plan_lekcji`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `zmiany_plan_lekcji`
+--
+ALTER TABLE `zmiany_plan_lekcji`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+COMMIT;
+
+CREATE TABLE `ogloszenia` (
+  `id` int(11) NOT NULL,
+  `tytul` text NOT NULL,
+  `tresc` text NOT NULL,
+  `id_autora` int(11) NOT NULL,
+  `data` text NOT NULL,
+  `zdjecie_header` text NOT NULL,
+  `zdjecia` text NOT NULL,
+  `is_popular` tinyint(1) NOT NULL,
+  `is_edited` tinyint(1) NOT NULL,
+  `data_edited` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
+
+--
+-- Dumping data for table `ogloszenia`
+--
+
+INSERT INTO `ogloszenia` (`id`, `tytul`, `tresc`, `id_autora`, `data`, `zdjecie_header`, `zdjecia`, `is_popular`, `is_edited`, `data_edited`) VALUES
+(5, 'Wycieczka Szkolna - Europa', 'Wycieczka była niesamowita, zwiedziliśmy wiele państw takich jak:\r\n\r\n- Dania\r\n- Ukraina\r\n- Rosja\r\n- Polska\r\n- UK\r\n', 1, '2024-07-31 16:15:43', 'uploads/1722435343_header_Power Rangers_.. Wonderla 😆 . . .jpg', '[\"uploads\\/1722435343_gallery_Train.jpg\",\"uploads\\/1722435343_gallery_Top 10 Fun & Amazing Vacation Spots For Teenagers _ Travel Ideas & Travel Guide.jpg\",\"uploads\\/1722435343_gallery_Trip.jpg\"]', 1, 1, '2024-07-31 16:15:59');
+
+--
+-- Indeksy dla zrzutów tabel
+--
+
+--
+-- Indeksy dla tabeli `ogloszenia`
+--
+ALTER TABLE `ogloszenia`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `ogloszenia`
+--
+ALTER TABLE `ogloszenia`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+COMMIT;
+
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
