@@ -502,7 +502,7 @@ $conn->close();
             <label for="przedmiot">Przedmiot:</label>
             <select id="przedmiot" name="przedmiot" required>
                 <?php
-                    $array = explode(',',$_SESSION['Czego_uczy_user']) ;
+                    $array = explode(';',$_SESSION['Czego_uczy_user']) ;
                 ?>
 
                 <?php if($_SESSION['Rola_user'] == 'Admin'){ foreach($subjectColumns as $subject):?>
@@ -575,7 +575,7 @@ $conn->close();
             <label for="przedmiot">Przedmiot:</label>
             <select id="przedmiot" name="przedmiot" required>
                 <?php
-                    $array = explode(',',$_SESSION['Czego_uczy_user']) ;
+                    $array = explode(';',$_SESSION['Czego_uczy_user']) ;
                 ?>
 
                 <?php if($_SESSION['Rola_user'] == 'Admin'){ foreach($subjectColumns as $subject):?>

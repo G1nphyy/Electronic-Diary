@@ -272,9 +272,99 @@ unset($_SESSION['cheaking_login']);
             <div class="hour" id="hour"></div>
             <div class="left">
                 <div class="card plan_lekcji">
-                    <div class="card-header">Dzisiejszy Plan Lekcji</div>
+                    <div class="card-header">Plan Lekcji</div>
                     <div class="card-content-open">
-                        <?php
+                        <?php       
+                        
+                            function get_moved_lesson($data_today){
+                                //Sigma?
+                                
+
+
+
+
+                            }
+                            function handleLessonChanges($rows, $index, $lesson, $conn) {
+                                $was = [];
+                                foreach ($rows as $row) {
+                                    $lekcja_index = explode(" ", $row['co_sie_dzieje'] )[0];
+                                    $Rodzaj = $row['rodzaj'];
+                                    $przedmiot_zasptepstwo = explode(" ", $row['co_sie_dzieje'] )[2] ?? '';
+                                    $sala_zastepstwo = explode(" ", $row['co_sie_dzieje'] )[3] ?? '';
+                                    $id_nauczyciela_zastepstwo = explode(" ", $row['co_sie_dzieje'] )[1] ?? '';
+                                    $flag = true;
+
+                                    // Checking if the current lesson matches the affected lesson
+                                    if (isset($lekcja_index) && $lekcja_index == $index && !array_search($index, $was)) {
+                                        array_push($was, $index);
+                                        
+                                        switch ($Rodzaj) {
+                                            case 'Odwolaj':
+                                                echo "Uczniowie Zwolnieni <br> <del>" ;
+                                                foreach ($lesson as $key => $val) {
+                                                    echo "$key: $val<br>";
+                                                }
+                                                echo "</del>";
+                                                $flag = false;
+                                                break;
+                                            
+                                            case 'Przesun':
+                                                echo "<b>Lekcja przeniesiona</b> <br> <del>"; 
+                                                foreach ($lesson as $key => $val) {
+                                                    echo "$key: $val<br>";
+                                                }
+                                                echo "</del>";
+                                                $flag = false;
+                                                break;
+                                            
+                                            case 'Zastepstwo':
+                                                $text = "";
+                                                if ($przedmiot_zasptepstwo !== $lesson->Przedmiot) {
+                                                    $text .= "Przedmiot: <del>" . $lesson->Przedmiot . '</del> ' . $przedmiot_zasptepstwo . "<br>";
+                                                } else {
+                                                    $text .= "Przedmiot: ".$lesson->Przedmiot . '<br>';
+                                                }
+
+                                                if ($id_nauczyciela_zastepstwo !== $lesson->Nauczyciel) {
+                                                    $sql = "SELECT * FROM users WHERE id = '$id_nauczyciela_zastepstwo'";
+                                                    $result = $conn->query($sql);
+                                                    if ($result && $result->num_rows > 0) {
+                                                        $substituteTeacher = $result->fetch_assoc();
+                                                        $sql = "SELECT * FROM users WHERE id = '$lesson->Nauczyciel'";
+                                                        $result = $conn->query($sql);
+                                                        if ($result && $result->num_rows > 0) {
+                                                            $Naaaa = $result->fetch_assoc();
+                                                        }
+                                                        $text .= "Nauczyciel: <del><b>" . $Naaaa["Imie"]. " ". $Naaaa["Nazwisko"] . "</b></del> <b>" . $substituteTeacher['Imie'] . " " . $substituteTeacher['Nazwisko'] . "</b><br>";
+                                                    } else {
+                                                        $text .= "Nauczyciel: <del><b>" . $lesson->Nauczyciel . "</b></del><br>";
+                                                    }
+                                                } else {
+                                                    $text .= "Nauczyciel: <b>" . $lesson->Nauczyciel . "</b><br>";
+                                                }
+
+                                                
+                                                if ($sala_zastepstwo !== $lesson->Sala) {
+                                                    $text .= "Sala: <del>" . $lesson->Sala . '</del> ' . $sala_zastepstwo . "<br>";
+                                                } else {
+                                                    $text .= "Nauczyciel: " . $lesson->Sala . '<br>';
+                                                }
+
+                                                echo $text;
+                                                $flag = false;
+                                                break;
+
+                                            default:
+                                                break;
+                                        }
+                                    } else if ( !array_search($index, $was) &&  $flag){
+                                        foreach ($lesson as $key => $val) {
+                                            echo "$key: $val<br>";
+                                        }
+                                    }
+                                }
+                            }
+
                             function PlanLekcji($offset, $conn) {
                                 $daysInPolish = [
                                     'Mon' => 'Poniedzialek',
@@ -287,47 +377,96 @@ unset($_SESSION['cheaking_login']);
                                 ];
                                 
                                 $dayOfWeek = date('D', strtotime("+$offset day"));
+                                
+                                // Check if day exists in the Polish days array
                                 if (!array_key_exists($dayOfWeek, $daysInPolish)) {
                                     echo "Nieznany dzień tygodnia!";
                                     return;
                                 }
                                 
                                 $dayPolish = $daysInPolish[$dayOfWeek];
-                                
+                            
+                                // Connection error check
                                 if ($conn->connect_error) {
                                     die("Błąd połączenia: " . $conn->connect_error);
                                 }
-
+                            
+                                // Check if the column for the current day exists in the table
                                 $sql = "SELECT COLUMN_NAME 
                                         FROM INFORMATION_SCHEMA.COLUMNS 
                                         WHERE TABLE_NAME = 'plany lekcji' 
                                         AND COLUMN_NAME = '$dayPolish'";
                                 $result = $conn->query($sql);
+                                
                                 if ($result->num_rows > 0) {
-                                    while($row = $result->fetch_assoc()) {
+                                    while ($row = $result->fetch_assoc()) {
                                         $columnName = $row["COLUMN_NAME"];
                                         $klasa = $_SESSION['Klasa_user'];
+                            
+                                        // Fetch class schedule
                                         $sqlData = "SELECT `$columnName` FROM `plany lekcji` WHERE Klasa = '$klasa'";
                                         $resultData = $conn->query($sqlData);
                             
+                                        // Check for schedule changes on the current date
+                                        $data_today = date("Y-m-d", strtotime("+$offset day"));
+                                        $sql_question = "SELECT * FROM `zmiany_plan_lekcji` WHERE `data` = '$data_today'";
+                                        $resultChanges = $conn->query($sql_question);
+                            
+                                        $rows = [];
+                                        while ($row = $resultChanges->fetch_assoc()) {
+                                            $rows[] = $row;
+                                        }
+                            
+                                        // Display schedule
                                         if ($resultData->num_rows > 0) {
-                                            while($dataRow = $resultData->fetch_assoc()) {
+                                            while ($dataRow = $resultData->fetch_assoc()) {
                                                 $dzien = json_decode($dataRow[$columnName]);
-                                                $c = 0;
+                                                $c = -1;
                                                 echo "<div class='hide'><table>";
                                                 foreach ($dzien as $value) {
                                                     $c++;
                                                     echo "<tr>";
+                                                    foreach ($rows as $row) {
+                                                        $lekcja_index = explode(" ", $row['co_sie_dzieje'] )[0];
+                                                        $Rodzaj = $row['rodzaj'];
+                                                        $przedmiot_zasptepstwo = explode(" ", $row['co_sie_dzieje'] )[2] ?? '';
+                                                        $sala_zastepstwo = explode(" ", $row['co_sie_dzieje'] )[3] ?? '';
+                                                        $id_nauczyciela_zastepstwo = explode(" ", $row['co_sie_dzieje'] )[1] ?? '';
+                                                        if ($Rodzaj == "Przesun") {
+                                                            $index_przesun = explode(" ", $row['co_sie_dzieje'] )[2] ?? '';
+                                                            $data_przesun = explode(" ", $row['co_sie_dzieje'] )[1] ?? '';
+                                                            if($data_today == $data_przesun && $c == $index_przesun){
+                                                                $JD = true;
+                                                            }
+                                                        }
+                                                    }
                                                     if (is_object($value)) {
                                                         echo "<td>$c.</td><td>";
-                                                        
-                                                        foreach ($value as $key => $val) {
-                                                            echo "$key: $val<br>";
+
+                                                        if(isset($JD) && $JD){
+                                                            get_moved_lesson($data_today);
+                                                            unset($JD);
                                                         }
-                                                        echo"</td>";
-                                                    } else {
-                                                        echo "<td>$c.</td> <td>-</td>";
+                                                        if (empty($rows)) {
+                                                            foreach ($value as $key => $val) {
+                                                                echo "$key: $val<br>";
+                                                            }
+                                                        } else {
+                                                            handleLessonChanges($rows, $c, $value, $conn);
+                                                        }
+                                                        echo "</td>";
+                                                    } else{
+                                                        if(isset($JD) && $JD){
+                                                            
+                                                            echo "<td>$c.</td><td>";
+                                                            get_moved_lesson($data_today);
+                                                            echo "</td>";
+                                                            unset($JD);
+                                                        }else{
+                                                            echo "<td>$c.</td><td>-</td>";
+                                                        }
                                                     }
+
                                                     echo "</tr>";
                                                 }
                                                 echo "</table></div>";
@@ -340,6 +479,7 @@ unset($_SESSION['cheaking_login']);
                                     echo "Brak lekcji w dniu $dayPolish.";
                                 }
                             }
+                            
                             
                             echo "<h2 onclick='headerOpen(this)'>Dzisiejszy plan lekcji &#x25BE;</h2>";
                             PlanLekcji(0, $conn);
@@ -399,9 +539,8 @@ unset($_SESSION['cheaking_login']);
                                     if($val!=="" && $val!= NULL) {
                                         $val = explode(",",$val);
                                         $val = $val[count($val)-1];
-                                        list($ocena,$wagaiopis) = explode(":",$val);
-                                        list($waga,$opis) = explode("-",$wagaiopis);
-                                        echo "<b>$key</b>: $ocena<br>";
+                                        $osan = explode("$", $val);                                                    
+                                        echo "<b>$key</b>: $osan[0]<br>";
                                     }else{
                                         echo "<b>$key</b>: Brak ocen<br>";
                                     }

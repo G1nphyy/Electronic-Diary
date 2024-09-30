@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
          
             $oceny = $row[$przedmiot]; 
             $oceny = explode(',', $oceny); 
-            $oceny[] = $grade.":".$waga."-".$opis;
+            $oceny[] = $grade."$".$waga."$".$opis;
             if(empty($oceny[0])) {
                 $oceny_str = implode('', $oceny);
             }else{

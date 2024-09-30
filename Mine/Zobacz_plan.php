@@ -12,7 +12,19 @@ if (!isset($_GET['klasa']) && !isset($_GET['id'])) {
 $klasa = $_GET['klasa'] ?? '';
 $id = $_GET['id'] ?? '';
 
-$current_date = $_GET['current_date'] ?? date('Y-m-d');
+$current_day =  date('D');
+
+$days = [
+    "Mon" => 0,
+    "Tue" => 1,
+    "Wed" => 2,
+    "Thu" => 3,
+    "Fri" => 4,
+    "Sat" => 5,
+    "Sun" => 6
+];
+$sdasd = $days[$current_day];
+$current_date = $_GET['current_date'] ?? date('Y-m-d', strtotime( "- $sdasd days"));
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'next') {

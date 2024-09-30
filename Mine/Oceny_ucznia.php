@@ -30,12 +30,11 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
         $parsedOceny = [];
 
         foreach ($oceny as $ocena) {
-            list($ocenaVal, $wagaAndOpis) = explode(':', $ocena);
-            list($waga, $opis) = explode('-', $wagaAndOpis);
+            $osan = explode("$", $ocena);                        
             $parsedOceny[] = [
-                'ocena' => (float) $ocenaVal,
-                'waga' => (float) $waga,
-                'opis' => $opis 
+                'ocena' => (float) $osan[0],
+                'waga' => (float) $osan[1],
+                'opis' => $osan[2] 
             ];
         }
 
