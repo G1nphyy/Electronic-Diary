@@ -134,7 +134,7 @@ CREATE TABLE `users_oceny` (
 INSERT INTO `users_oceny` (`id_ocen`, `id_ucznia`, `Matematyka`, `Angielski`, `Polski`) VALUES
 (1, 1, NULL, NULL, NULL),
 (2, 2, '', NULL, NULL),
-(3, 3, '2:3-Sprawdzian - Unit 3', NULL, NULL),
+(3, 3, '2$3$Sprawdzian$Unit 3', NULL, NULL),
 (4, 4, NULL, NULL, NULL),
 (5, 5, NULL, NULL, NULL),
 (6, 6, NULL, NULL, NULL),
