@@ -489,7 +489,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
                                                     echo $lesson['Przedmiot'] . " - " . $lesson['Sala'] . "<br> <b>" . $teacherName . "</b> <br>";
                                                 }
                                                 
-                                                if ($_SESSION['Rola_user'] == 'Admin'){
+                                                if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d'){
                                                     $sql = "SELECT * FROM zmiany_plan_lekcji WHERE data = '$data' and klasa = '$klasa'";
                                                     $result = $conn->query($sql);
                                                     $rows = [];
@@ -681,6 +681,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
                                                                 $result = $conn->query($sql);
                                                                 $result = $result->fetch_assoc();
                                                                 $result = array_slice($result, 2);
+                                                                array_pop($result);
                                                                 echo json_encode($result, true);
                                                             ?>;
                                                             
@@ -728,6 +729,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
                                                             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                                                             xhr.onreadystatechange = function () {
                                                                 if (xhr.readyState == 4 && xhr.status == 200) {
+                                                                    // console.log(xhr.responseText);
                                                                     window.location.reload();
                                                                 }
                                                             };
@@ -806,7 +808,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
             <button type="submit" name="action" value="next">Następny tydzień</button>
         </form>
     </div>
-    <?php if ($_SESSION['Rola_user'] === 'Admin' and isset($_GET['klasa'])): ?>
+    <?php if (($_SESSION['Rola_user'] === 'Admin' or $_SESSION['Rola_user'] === 'Admin_d') and isset($_GET['klasa'])): ?>
     <form action="Zobacz_plan.php?klasa=<?=$_GET['klasa']?>" method="POST">
         <div class="button-container">
             <button name="usun">Usuń Plan lekcji klasy <?=$_GET['klasa']?></button>
@@ -821,3 +823,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['usun'])) {
 </body>
 </html>
 <?php $conn->close(); ?>
+<?php include "disabled_functions.html"?>

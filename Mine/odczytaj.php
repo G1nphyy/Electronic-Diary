@@ -13,7 +13,8 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 
 if (!isset($data['id'])) {
-    die("ID not provided");
+    header('Location: zaloguj.php');
+    exit();
 }
 
 $id = $conn->real_escape_string($data['id']);

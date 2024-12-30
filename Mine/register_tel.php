@@ -94,6 +94,25 @@ if ($conn->connect_errno != 0) {
             $_SESSION['haslo1_e'] = 'Nie podano powtórzenia hasła';
     }
 
+    if (isset($_POST['kod_szkoly'])) {
+        $kod = $_POST['kod_szkoly'];
+        $_SESSION['checking_kod_szkoly'] = $kod;
+
+        $sql = "SELECT * FROM schools WHERE kod_szkoly = '$kod'";
+        $result = $conn ->query($sql);
+        if ($result->num_rows != 1){
+            $is_okay = false;
+            $_SESSION['kod_szkoly_e'] = 'Podany kod nie istnieje';
+        }
+        $result = $result ->fetch_assoc();
+        $kod = $result['Id_szkoly'];
+                   
+
+    } else{
+            $is_okay = false;
+            $_SESSION['kod_szkoly_e'] = 'Nie podano kodu szkoły';
+    }
+
     if(isset($_POST['regulamin'])){
         $Regulamin = $_POST['regulamin'];
         $_SESSION['checking_chceckbox'] = $Regulamin;
@@ -130,7 +149,7 @@ if ($conn->connect_errno != 0) {
         $Imie[0] = strtoupper($Imie[0]);
         $Nazwisko[0] = strtoupper($Nazwisko[0]);
 
-        $sql1 = "INSERT INTO users VALUES (NULL,'$Imie','$Nazwisko',NULL,'$Email','$Haslo', 'Uczen', NULL)";
+        $sql1 = "INSERT INTO users VALUES (NULL,'$Imie','$Nazwisko',NULL,'$Email','$Haslo', 'Uczen', NULL, '', '$kod')";
         $result1 = $conn->query($sql1);
 
         unset($_SESSION['cheaking_imie']);
@@ -143,6 +162,8 @@ if ($conn->connect_errno != 0) {
         unset($_SESSION['email_e']);
         unset($_SESSION['haslo_e']);
         unset($_SESSION['haslo1_e']);
+        unset($_SESSION['checking_kod_szkoly']);
+        unset($_SESSION['kod_szkoly_e']);
 
         $sql2 = "SELECT id FROM users WHERE `E-mail` = '$Email'";
         $result2 = $conn->query($sql2);

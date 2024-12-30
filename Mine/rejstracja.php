@@ -136,6 +136,15 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
             }
         ?>
         <br>
+
+        <input type="text" name="kod_szkoly" placeholder="Podaj kod szkoły" value="<?php echo isset($_SESSION['checking_kod_szkoly']) ? htmlspecialchars($_SESSION['checking_kod_szkoly']) : ''; ?>"><br>
+        <?php
+            if (isset($_SESSION['kod_szkoly_e'])) {
+                echo '<span class="error">' . $_SESSION['kod_szkoly_e'] . '</span>';
+                unset($_SESSION['kod_szkoly_e']);
+            }
+        ?>
+        <br>
         <label>
         <input type="checkbox" name="regulamin" <?= isset($_SESSION['checking_chceckbox']) ? 'checked' : ''?> >
         Zapoznałam(em) się z <a href="Regulamin.html" target="_blank" class="inny">Regulaminem</a>
@@ -162,3 +171,4 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
     </form>
 </body>
 </html>
+<?php include "disabled_functions.html"?>

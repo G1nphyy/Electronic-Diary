@@ -62,6 +62,7 @@ if ($conn->connect_errno != 0) {
             $_SESSION['user_id'] = $wiersz['id'];
             $_SESSION['Klasa_user'] = $wiersz['Klasa'];
             $_SESSION['Icon_user'] = $wiersz['icon'];
+            $_SESSION['Szkola_user'] = $wiersz['nalezy_id_szkoly'];
             $_SESSION['Login'] = true;
             header('Location: welcome.php');
             exit();

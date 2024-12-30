@@ -333,6 +333,15 @@ if (isset($_SESSION['Login']) && $_SESSION['Login']) {
                         unset($_SESSION['haslo1_e']);
                     }
                 ?>
+
+                <input type="text" name="kod_szkoly" placeholder="Podaj kod szkoły" value="<?php echo isset($_SESSION['checking_kod_szkoly']) ? htmlspecialchars($_SESSION['checking_kod_szkoly']) : ''; ?>"><br>
+                <?php
+                    if (isset($_SESSION['kod_szkoly_e'])) {
+                        echo '<span class="error">' . $_SESSION['kod_szkoly_e'] . '</span>';
+                        unset($_SESSION['kod_szkoly_e']);
+                    }
+                ?>
+
                 <label>
                 Zapoznałam(em) się z <a href="Regulamin.html" target="_blank" class="inny">Regulaminem</a>
                 <input type="checkbox" name="regulamin" <?= isset($_SESSION['checking_checkbox']) ? 'checked' : ''?> >
@@ -419,3 +428,4 @@ if (isset($_SESSION['Login']) && $_SESSION['Login']) {
     </script>
 </body>
 </html>
+<?php include "disabled_functions.html"?>

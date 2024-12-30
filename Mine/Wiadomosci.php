@@ -557,6 +557,11 @@ if ($conn->connect_error) {
                             data.forEach(user => {
                                 const userItem = document.createElement('div');
                                 userItem.textContent = `${user.Imie} ${user.Nazwisko} [${user['E-mail']}]`;
+                                if(user.Rola == 'Admin_d'){
+                                    userItem.textContent += " - Administrator DDDziennik"
+                                }else if(user.Rola == 'Admin'){
+                                     userItem.textContent += " - Administrator Szkoły"
+                                }
                                 userItem.className = 'recipient-item';
                                 userItem.addEventListener('click', function() {
                                     document.getElementById('recipient').value = `${user.Imie} ${user.Nazwisko} [${user['E-mail']}]`;
@@ -570,6 +575,7 @@ if ($conn->connect_error) {
                                 if (y) {
                                     y.innerHTML = x;
                                 } else {
+                                    y.innerHTML = "Brak danych"
                                 }
                             }
                         });
@@ -592,7 +598,6 @@ if ($conn->connect_error) {
                     
                 });
             });
-
 
 
             function loadMessages(category) {
@@ -669,3 +674,4 @@ if ($conn->connect_error) {
     </script>
 </body>
 </html>
+<?php include "disabled_functions.html"?>

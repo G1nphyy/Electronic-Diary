@@ -13,17 +13,28 @@ if ($conn->connect_error) {
 $_SESSION['klasa_filter'] = isset($_POST['klasa_filter']) ? $_POST['klasa_filter'] : (isset($_SESSION['klasa_filter']) ? $_SESSION['klasa_filter'] : 'all');
 $klasa_filter = $_SESSION['klasa_filter'];
 
-
-
+$_SESSION['school_filter'] = isset($_POST['school_filter']) ? $_POST['school_filter'] : (isset($_SESSION['school_filter']) ? $_SESSION['school_filter'] : '');
+$school_filter = $_SESSION['school_filter'];
+if($school_filter == '') {
+    $information = "Proszę wybrać szkołę";
+    $school_filter = -1;
+}
+if($_SESSION['Rola_user'] != "Admin_d"){
+    $school_filter = $_SESSION['Szkola_user'];
+    $_SESSION['school_filter'] = $school_filter;
+}
 
 $x = $_SESSION['Klasa_user'];
 $sql = "SELECT * FROM tests";
+if($school_filter!= ''){
+    $sql .= " WHERE nalezy_id_szkoly = '$school_filter' ";
+}
 
 if($_SESSION['Rola_user'] == 'Uczen'){
-    $sql .= " WHERE `klasa` LIKE '$x'";
+    $sql .= " AND  `klasa` LIKE '$x'";
 }else if ($klasa_filter != 'all') {
     $Klasa = $klasa_filter;
-    $sql .= " WHERE `klasa` LIKE '$Klasa'";
+    $sql .= " AND `klasa` LIKE '$Klasa'";
 }else{
     $Klasa = 'all';
 }
@@ -50,7 +61,7 @@ $week_offset = isset($_GET['week_offset']) ? intval($_GET['week_offset']) : 0;
 $sql = "SELECT users.*, users_oceny.*
                 FROM users 
                 LEFT JOIN users_oceny ON users.id = users_oceny.id_ucznia 
-                WHERE users.Rola != 'Admin'";
+                WHERE users.Rola != 'Admin' and users.Rola != 'Admin_db'";
 
 
 $result = $conn->query($sql);
@@ -58,14 +69,14 @@ if ($result) {
     $rows = $result->fetch_all(MYSQLI_ASSOC);
 
     $subjectColumns = !empty($rows) ? array_keys($rows[0]) : [];
-    $subjectColumns = array_slice($subjectColumns, 11);
+    $subjectColumns = array_slice($subjectColumns, 12);
 } else {
     echo "Error retrieving data: " . $conn->error;
     $rows = [];
     $subjectColumns = [];
 }
 
-$allClassSql = "SELECT Klasa FROM users WHERE Rola != 'Admin' ORDER BY Klasa";
+$allClassSql = "SELECT Klasa FROM users WHERE Rola != 'Admin' AND Rola != 'Admin_d' ORDER BY Klasa";
 $allClassResult = $conn->query($allClassSql);
 $allClass = $allClassResult->fetch_all(MYSQLI_ASSOC);
 $allClass = array_column($allClass, 'Klasa');
@@ -113,8 +124,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $data = $_POST['data'];
                     $klasa = $_POST['klasa'];
                     $lekcja = $_POST['lekcja'];
+                    $id_szkoly = $_SESSION['school_filter'] ?? null;                
+                    if($id_szkoly == ''){
+                        $id_szkoly = null;
+                    }
+                    if($id_szkoly==null){
+                        $bad_sobad = true;
+                        break;
+                    }
                     $data_utworzenia = date('Y-m-d H:i:s'); 
-                    $insert_sql = "INSERT INTO tests (przedmiot, kategoria, nazwa, opis, data, klasa, data_utworzenia, lekcja) VALUES ('$przedmiot', '$kategoria', '$nazwa', '$opis', '$data', '$klasa', '$data_utworzenia', '$lekcja')";
+                    $insert_sql = "INSERT INTO tests (przedmiot, kategoria, nazwa, opis, data, klasa, data_utworzenia, lekcja, nalezy_id_szkoly) VALUES ('$przedmiot', '$kategoria', '$nazwa', '$opis', '$data', '$klasa', '$data_utworzenia', '$lekcja', '$id_szkoly')";
 
                     $conn->query($insert_sql);
 
@@ -130,7 +149,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $data = $_POST['data'];
                     $klasa = $_POST['klasa'];
                     $lekcja = $_POST['lekcja'];
-            
                     $update_sql = "UPDATE tests SET przedmiot='$przedmiot', kategoria='$kategoria', nazwa='$nazwa', opis='$opis', data='$data', klasa='$klasa', lekcja='$lekcja' WHERE id=$test_id";
             
                     $conn->query($update_sql);
@@ -150,7 +168,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 }
-$conn->close();
+if (isset($bad_sobad) and $bad_sobad){
+    $information = "Aby dodać sprawdziań wybierz szkołę";
+    $school_filter = -1;
+}
 ?>
 
 <!DOCTYPE html>
@@ -373,6 +394,8 @@ $conn->close();
             width: 90%;
             max-width: 500px;
             animation: fadeIn 0.3s ease-in-out;
+            max-height: 75dvh;
+            overflow-y: auto;
         }
         @keyframes fadeIn {
             from {
@@ -450,15 +473,55 @@ $conn->close();
             outline: none;
             box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
-        #filter{
-            width: 30%;
-            text-align: center;
-        }
         .open-add-form{
             cursor: pointer;
             position: absolute;
             right: 5px;
             bottom: 5px;
+        }
+        .school-search {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            display: none; 
+            z-index: 10;
+        }
+
+        .dropdown-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f0f0;
+        }
+        .school-selector {
+            position: relative;
+        }
+        .filters{
+            margin: 20px 200px;
+            padding: 10px 200px;
+            width: auto;
+            display: flex;
+            background-color: #fdfdfd;
+            border: 1px solid #c0c0c0;
+            border-radius: 4px;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
         }
     </style>
 </head>
@@ -475,18 +538,53 @@ $conn->close();
 
 
     <?php if($_SESSION['Rola_user'] != 'Uczen') :?>
-    
-    <form method="post" id="filter">
-        <label for="klasa_filter">Klasa:</label>
-        <select name="klasa_filter" id="klasa_filter" onchange="this.form.submit()">
-            <?php if (!empty($allClass)): ?>
-                <?php foreach(array_unique($allClass) as $osoba): ?>
-                    <option value="<?= htmlspecialchars($osoba) ?>" <?=($Klasa != '' and htmlspecialchars($osoba) == $Klasa) ? 'selected' : "" ?>> <?= htmlspecialchars($osoba)?></option>
-                <?php endforeach; ?>
-            <?php endif ?>
-            <option value="all" <?=$Klasa == 'all' ? 'selected' : ''?>>Wszystkie</option>
-        </select>
-    </form>
+    <div class="filters">
+        <form method="post" id="filter">
+            <label for="klasa_filter">Klasa:</label>
+            <select name="klasa_filter" id="klasa_filter" onchange="this.form.submit()">
+                <?php if (!empty($allClass)): ?>
+                    <?php foreach(array_unique($allClass) as $osoba): ?>
+                        <option value="<?= htmlspecialchars($osoba) ?>" <?=($Klasa != '' and htmlspecialchars($osoba) == $Klasa) ? 'selected' : "" ?>> <?= htmlspecialchars($osoba)?></option>
+                    <?php endforeach; ?>
+                <?php endif ?>
+                <option value="all" <?=$Klasa == 'all' ? 'selected' : ''?>>Wszystkie</option>
+            </select>
+        </form>
+
+        <?php if($_SESSION['Rola_user'] == "Admin_d"): ?>
+            <div class="school-selector">
+                <label for="szkola">Szkoła: </label>
+                <?php 
+                if(!empty($information) or isset($information)){
+                    echo "<span style='color:red'>*$information </span>";
+                }else{
+                    if($school_filter == 0){
+                        echo "<span style='color:green'>*Wybierz szkołę</span>";
+                    }else{
+                        $sql = "SELECT * FROM schools WHERE Id_szkoly = '$school_filter' ";
+                        $result = $conn->query($sql);
+                        $row = $result->fetch_assoc();
+                        echo '<br> <span> '.$row["nazwa_szkoly"].' </span>';
+                    }
+                    
+                }
+                 ?>
+
+                <script>
+                    function formin(thi){
+                        setTimeout(() => {
+                            thi.form.submit();
+                        }, 100);
+                    }                        
+                </script>
+                <form action="" method="post">
+                    <input type="hidden" name="school_filter" value="">                                                                                             
+                    <input type="text" class="school-search" id="szkola" placeholder="Wyszukaj szkołę" autocomplete="off" required onchange="formin(this)">
+                </form>
+                <div class="dropdown"></div>
+            </div>
+        <?php endif; ?>
+    </div>
     <div class="dodaj_test" id="edytuj_test" style="display: none">
 
         <div class="dodaj_test_header" id="edytuj_test_header">
@@ -513,7 +611,7 @@ $conn->close();
                 <?php endforeach;}?>   
             </select>
             <br><br>
-            <label for="kategoria">Kategoria:</label>
+            <label for="kategoria_">Kategoria:</label>
             <select id="kategoria_" name="kategoria" required>
                 <option value="Sprawdzian">Sprawdzian</option>
                 <option value="Kartkówka">Kartkówka</option>
@@ -521,6 +619,7 @@ $conn->close();
                 <option value="" id="okl_" >Własne (wpisz)</option>
             </select>
             <input type="text" id="Input_" style="display: none">
+            
             <script>
                 document.addEventListener('DOMContentLoaded', () => {
                     const select = document.getElementById('kategoria_');
@@ -578,7 +677,7 @@ $conn->close();
                     $array = explode(';',$_SESSION['Czego_uczy_user']) ;
                 ?>
 
-                <?php if($_SESSION['Rola_user'] == 'Admin'){ foreach($subjectColumns as $subject):?>
+                <?php if($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d'){ foreach($subjectColumns as $subject):?>
                     <option value="<?= $subject ?>" selected><?= $subject ?></option>
                 <?php endforeach;}?>
                 <?php if($_SESSION['Rola_user'] == 'Nauczyciel'){ foreach($array as $subject):?>
@@ -700,6 +799,71 @@ $conn->close();
         </div>
     </div>
     <script>
+
+        const searchInputs = document.querySelectorAll('.school-search');
+
+        searchInputs.forEach((input) => {
+            const parentDiv = input.closest('.school-selector');
+            const dropdown = parentDiv.querySelector('.dropdown');
+
+            input.addEventListener('input', function () {
+                const query = this.value;
+
+                if (query.length >= 2) {
+                    fetch(`search_schools.php?query=${encodeURIComponent(query)}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            dropdown.innerHTML = ''; 
+
+                            data.forEach((school) => {
+                                const item = document.createElement('div');
+                                item.classList.add('dropdown-item');
+                                item.textContent = `${school.nazwa_szkoly}`;
+                                item.dataset.value = school.Id_szkoly;
+
+                                item.addEventListener('click', () => {
+                                    input.value = `${school.nazwa_szkoly}`;
+                                    try{
+                                        parentDiv.querySelector('input[name="school_id"]').value = school.Id_szkoly;
+                                    } catch (error) {
+                                        parentDiv.querySelector('input[name="school_filter"]').value = school.Id_szkoly;
+                                    }
+                                    dropdown.style.display = 'none';
+                                });
+
+                                dropdown.appendChild(item);
+                            });
+
+                            const item = document.createElement('div');
+                                item.classList.add('dropdown-item');
+                                item.textContent = `Brak`;
+                                item.dataset.value = '.';
+
+                                item.addEventListener('click', () => {
+                                    input.value = `Brak`;
+                                    parentDiv.querySelector('input[name="school_id"]').value = '.';
+                                    dropdown.style.display = 'none';
+                                });
+
+                                dropdown.appendChild(item);
+
+                            dropdown.style.display = 'block'; 
+                        })
+                        .catch((error) => console.error('Błąd:', error));
+                } else {
+                    dropdown.style.display = 'none'; 
+                }
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!parentDiv.contains(event.target)) {
+                    dropdown.style.display = 'none';
+                }
+            });
+        });
+
+
+
         function editTest(test_id) {
             var test = document.querySelector(`.test[data-id='${test_id}']`);
             var przedmiot = test.getAttribute('data-przedmiot');
@@ -829,3 +993,4 @@ $conn->close();
     </script>
 </body>
 </html>
+<?php include "disabled_functions.html"?>

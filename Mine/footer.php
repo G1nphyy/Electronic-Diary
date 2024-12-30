@@ -99,7 +99,11 @@
 <footer>
     <div class="footer-left">
         <img src="favicon.ico" alt="Logo" class="footer-logo">
-        <p>&copy; 2024 DDDziennik</p>
+        <p>&copy; <script>
+                    const date23 = new Date;
+                    document.write(date23.getFullYear())
+                  </script>
+                             DDDziennik</p>
     </div>
     <div class="footer-right">
         <p>Contact: <a href="mailto:dddziennik@dziennik.com">dddziennik@dziennik.com</a></p>

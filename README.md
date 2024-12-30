@@ -1,7 +1,15 @@
 # Electronic Diary
 
+## Important changes
+  - I added a multi-school feature to the **DDDziennik** 
+  - Repair some bugs that are still in the version without multi-school feature (i will not include them, bc i dont have time lol) 
+  - Updated database
 ## Overview
 The **Electronic Diary** is a journal adapted for one school. You can do all the things you need in an electronic school journal there. The all website is in Polish language because i'm from there ;)
+
+$$#
+Remember im not a security guy, so its not so safe to use, because in some places user can change a input or see an ids value.
+$$  
 
 ## Images From Website
 
@@ -78,6 +86,7 @@ After installing and running the application, you can access it by navigating to
 ## Start accounts
   | Role | E-mail | Password |
   |----------|----------|----------|
+  | Admin_d| michal@gmail.com | qwerty1234 |
   | Admin | adam@gmail.com | qwerty1234 |
   | Teacher | filip@gmail.com | qwerty1234 |
   | Student | alex@gmail.com | qwerty1234 |
@@ -85,7 +94,7 @@ After installing and running the application, you can access it by navigating to
 ## My plans
 
  - [x] Add cancellation, postponement and replacement of lessons
- - [ ] Make it Multi school
+ - [x] Make it Multi school
  - [x] Drink more coffee
 
 

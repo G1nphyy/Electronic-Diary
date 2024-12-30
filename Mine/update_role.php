@@ -1,6 +1,7 @@
 <?php
 session_start();
-if ($_SESSION['Rola_user'] !== 'Admin') {
+
+if ($_SESSION['Rola_user'] == 'Admin' and $_SESSION['Rola_user'] == 'Admin_d') {
     header('Location: zaloguj.php');
     exit();
 }

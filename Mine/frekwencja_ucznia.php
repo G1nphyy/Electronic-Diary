@@ -221,3 +221,4 @@ $conn->close();
     </script>
 </body>
 </html>
+<?php include "disabled_functions.html"?>
