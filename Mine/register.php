@@ -19,7 +19,7 @@ if ($conn->connect_errno != 0) {
         $_SESSION['checking_imie'] = $Imie;
         if(!preg_match("/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/", $Imie)){
 
-            $_SESSION['imie_e'] = 'Imię może składać się tylko z liter - ';
+            $_SESSION['imie_e'] = 'Imię może składać się tylko z liter';
             $is_okay = false;
         }
         if(str_contains($Imie," ")){
