@@ -14,7 +14,6 @@ if ($conn->connect_errno != 0) {
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $search = isset($_POST['search']) ? $conn->real_escape_string($_POST['search']) : '';
         $_SESSION['search'] = $search;
-
         $isset = false;
     } elseif (isset($_SESSION['search'])) {
         $search = $_SESSION['search'];
@@ -25,10 +24,25 @@ if ($conn->connect_errno != 0) {
     $_SESSION['rola_filter'] = isset($_POST['rola_filter']) ? $_POST['rola_filter'] : (isset($_SESSION['rola_filter']) ? $_SESSION['rola_filter'] : 'allR');
     $rola_filter = $_SESSION['rola_filter'];
 
-    $allIdsSql = "SELECT id FROM users WHERE Rola != 'Admin'";
+    $_SESSION['school_filter'] = isset($_POST['school_filter']) ? $_POST['school_filter'] : (isset($_SESSION['school_filter']) ? $_SESSION['school_filter'] : '');
+    $school_filter = $_SESSION['school_filter'] ;
+    if($_SESSION['Rola_user'] != 'Admin_d'){
+        $school_filter = $_SESSION['Szkola_user'];
+        $_SESSION['school_filter'] = $school_filter;
+    }
+
+
+    $allIdsSql;
+    if($_SESSION['Rola_user'] == 'Admin'){
+        $allIdsSql = "SELECT id FROM users WHERE Rola != 'Admin' and Rola != 'Admin_b' and  nalezy_id_szkoly = '$school_filter'";
+    }
+    
+    if($_SESSION['Rola_user'] == 'Admin_d'){
+        $allIdsSql = "SELECT id FROM users WHERE Rola != 'Admin_b' ";
+    }
 
     if($_SESSION['Rola_user'] == 'Nauczyciel'){
-        $allIdsSql = "SELECT id FROM users WHERE Rola = 'Uczen'";
+        $allIdsSql = "SELECT id FROM users WHERE Rola = 'Uczen' and  nalezy_id_szkoly = '$school_filter'";
     }
     
     if ($search) {
@@ -46,7 +60,11 @@ if ($conn->connect_errno != 0) {
     }else{
         $Rola = 'allR';
     }
+    if($school_filter != ''){
+        $allIdsSql.= " AND users.nalezy_id_szkoly LIKE '$school_filter'";
+    }
     
+    // TODO: PRZYSTOSOWAĆ TABELE DO NAUCZYCIELA I ADMINA TAK ABY WIDZIELY OSOBY TYLKO Z ICH SZKOŁY 
 
 
     $allIdsResult = $conn->query($allIdsSql);
@@ -54,17 +72,24 @@ if ($conn->connect_errno != 0) {
     $allIds = array_column($allIds, 'id');
 
 
-    $allClassSql = "SELECT Klasa FROM users WHERE Rola != 'Admin' ORDER BY Klasa";
+    $allClassSql = "SELECT Klasa FROM users WHERE Rola != 'Admin' and Rola != 'Admin_d' and  nalezy_id_szkoly = '$school_filter' ORDER BY Klasa";
     if($_SESSION['Rola_user'] == 'Nauczyciel'){
-        $allClassSql = "SELECT Klasa FROM users WHERE Rola = 'Uczen' ORDER BY Klasa";
+        $allClassSql = "SELECT Klasa FROM users WHERE Rola = 'Uczen' and  nalezy_id_szkoly = '$school_filter' ORDER BY Klasa";
     }
+    if($_SESSION['Rola_user'] == 'Admin_d'){
+        $allClassSql = "SELECT Klasa FROM users WHERE Rola != 'Admin_d' ORDER BY Klasa";
+    }
+
     $allClassResult = $conn->query($allClassSql);
     $allClass = $allClassResult->fetch_all(MYSQLI_ASSOC);
     $allClass = array_column($allClass, 'Klasa');
 
-    $allRolesSql = "SELECT Rola FROM users WHERE Rola != 'Admin' ORDER BY Rola";
+    $allRolesSql = "SELECT Rola FROM users WHERE Rola != 'Admin' and Rola != 'Admin_d' and  nalezy_id_szkoly = '$school_filter' ORDER BY Rola";
     if($_SESSION['Rola_user'] == 'Nauczyciel'){
-        $allRolesSql = "SELECT Rola FROM users WHERE Rola = 'Uczen' ORDER BY Rola";
+        $allRolesSql = "SELECT Rola FROM users WHERE Rola = 'Uczen' and  nalezy_id_szkoly = '$school_filter' ORDER BY Rola";
+    }
+    if($_SESSION['Rola_user'] == 'Admin_d'){
+        $allRolesSql = "SELECT Rola FROM users WHERE Rola != 'Admin_d' ORDER BY Rola";
     }
     $allRolesResult = $conn->query($allRolesSql);
     $allRoles = $allRolesResult->fetch_all(MYSQLI_ASSOC);
@@ -81,16 +106,28 @@ if ($conn->connect_errno != 0) {
     }
     $offset = ($page - 1) * $limit;
 
-    $sql = "SELECT users.*, users_oceny.*
+    if($_SESSION['Rola_user'] == 'Admin'){
+        $sql = "SELECT users.*, users_oceny.*, schools.*
             FROM users 
             LEFT JOIN users_oceny ON users.id = users_oceny.id_ucznia 
-            WHERE users.Rola != 'Admin'";
-    if($_SESSION['Rola_user'] == 'Nauczyciel'){
-        $sql = "SELECT users.*, users_oceny.*
-                FROM users 
-                LEFT JOIN users_oceny ON users.id = users_oceny.id_ucznia 
-                WHERE users.Rola = 'Uczen'";
+            LEFT JOIN schools ON users.nalezy_id_szkoly = schools.Id_szkoly
+            WHERE users.Rola != 'Admin' AND users.Rola != 'Admin_d' and  users.nalezy_id_szkoly = '$school_filter'";
     }
+    if($_SESSION['Rola_user'] == 'Nauczyciel'){
+        $sql = "SELECT users.*, users_oceny.*, schools.*
+                FROM users 
+                LEFT JOIN users_oceny ON users.id = users_oceny.id_ucznia
+                LEFT JOIN schools ON users.nalezy_id_szkoly = schools.Id_szkoly
+                WHERE users.Rola = 'Uczen' and  users.nalezy_id_szkoly = '$school_filter'";
+    }
+    if($_SESSION['Rola_user'] == 'Admin_d'){
+        $sql = "SELECT users.*, users_oceny.*, schools.*
+            FROM users 
+            LEFT JOIN users_oceny ON users.id = users_oceny.id_ucznia 
+            LEFT JOIN schools ON users.nalezy_id_szkoly = schools.Id_szkoly
+            WHERE users.Rola != 'Admin_d'";
+    }
+
     if ($search) {
         $sql .= " AND (users.Imie LIKE '%$search%' OR users.Nazwisko LIKE '%$search%' OR users.`E-mail` LIKE '%$search%')";
     }
@@ -101,24 +138,29 @@ if ($conn->connect_errno != 0) {
         $Rola = $rola_filter;
         $sql .= "AND users.Rola LIKE '$Rola'";
     }
+    if($school_filter != ''){
+        $sql.= " AND users.nalezy_id_szkoly LIKE '$school_filter'";
+    }
 
     $sql .= " LIMIT $limit OFFSET $offset";
 
     $result = $conn->query($sql);
     if ($result) {
         $rows = $result->fetch_all(MYSQLI_ASSOC);
-
         $subjectColumns = !empty($rows) ? array_keys($rows[0]) : [];
-        $subjectColumns = array_slice($subjectColumns, 11);
+        $subjectColumns = array_slice($subjectColumns, 12, -13);
     } else {
         echo "Error retrieving data: " . $conn->error;
         $rows = [];
         $subjectColumns = [];
     }
 
-    $countSql = "SELECT COUNT(*) AS total FROM users WHERE Rola != 'Admin'";
+    $countSql = "SELECT COUNT(*) AS total FROM users WHERE Rola != 'Admin' and Rola != 'Admin_d'";
     if($_SESSION['Rola_user'] == 'Nauczyciel'){
-        $countSql = "SELECT COUNT(*) AS total FROM users WHERE Rola = 'Uczen'";
+        $countSql = "SELECT COUNT(*) AS total FROM users WHERE Rola = 'Uczen' ";
+    }
+    if($_SESSION['Rola_user'] == 'Admin_d'){
+        $countSql = "SELECT COUNT(*) AS total FROM users WHERE Rola != 'Admin_d'";
     }
     if ($search) {
         $countSql .= " AND (Imie LIKE '%$search%' OR Nazwisko LIKE '%$search%' OR `E-mail` LIKE '%$search%')";
@@ -129,6 +171,9 @@ if ($conn->connect_errno != 0) {
     if ($rola_filter != 'allR') {
         $Rola = $rola_filter;
         $countSql .= "AND users.Rola LIKE '$Rola'";
+    }
+    if($school_filter != ''){
+        $countSql.= " AND users.nalezy_id_szkoly LIKE '$school_filter'";
     }
 
     $totalCount = $conn->query($countSql)->fetch_assoc()['total'];
@@ -146,6 +191,45 @@ if ($conn->connect_errno != 0) {
         $bulk = true;
     }
 
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_user']) && isset($_POST['user_id'])) {
+        $id = intval($_POST['user_id']); 
+        $conn->begin_transaction(); 
+    
+        try {
+            $stmt = $conn->prepare("DELETE FROM `wiadomości` WHERE id_od = ? OR id_do = ?");
+            $stmt->bind_param("ii", $id, $id);
+            $stmt->execute();
+
+            $stmt = $conn->prepare("DELETE FROM users_oceny WHERE id_ucznia = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+
+            $stmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+    
+            $conn->commit(); 
+            echo "User deleted successfully.";
+            header("Location: " . $_SERVER['HTTP_REFERER']);
+        } catch (Exception $e) {
+            $conn->rollback(); 
+            echo "Failed to delete user: " . $e->getMessage();
+        }
+    }
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['reset_password']) && isset($_POST['user_id'])) {
+        $id = intval($_POST['user_id']); 
+        $newPassword = password_hash(' ', PASSWORD_DEFAULT); 
+        $stmt = $conn->prepare("UPDATE users SET Haslo = ? WHERE id = ?");
+        $stmt->bind_param("si", $newPassword, $id);
+    
+        if ($stmt->execute()) {
+            echo "Password reset successfully.";
+        } else {
+            echo "Error resetting password: " . $stmt->error;
+        }
+        $stmt->close();
+    }
+    
     
 }
 ?>
@@ -154,7 +238,7 @@ if ($conn->connect_errno != 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tabela Uczniów</title>
+    <title><?=$_SESSION['Rola_user'] == "Admin_d" ? "Tabela Osób" : "Tabela Uczniów"?></title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -185,6 +269,7 @@ if ($conn->connect_errno != 0) {
             padding: 10px 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+            overflow: auto;
         }
         th {
             background-color: #f4f4f4;
@@ -574,6 +659,42 @@ if ($conn->connect_errno != 0) {
             margin-bottom: 8px;
         }
 
+        .school-search {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            display: none; 
+            z-index: 10;
+        }
+
+        .dropdown-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f0f0;
+        }
+        td form[action="Admin_user_update_school.php"] { 
+            display: block;            
+        }
+        .school-selector {
+            position: relative;
+        }
+
     </style>
     <script>
         let currentOpenForm = null;
@@ -603,7 +724,7 @@ if ($conn->connect_errno != 0) {
 </head>
 <body>
     <header>
-        <h1>Tabela Uczniów</h1>
+        <h1><?=$_SESSION['Rola_user'] == "Admin_d" ? "Tabela Osób" : "Tabela Uczniów"?></h1>
         <?php include 'nav.php'?>
     </header>
     <div class="container">
@@ -623,18 +744,37 @@ if ($conn->connect_errno != 0) {
                     <option value="WSZYSCY" <?=$limit == count($allIds) ? 'selected' : ''?>>WSZYSCY (ostrożnie)</option>
                 </select>
             </form>
+
+            <?php if ($_SESSION["Rola_user"] == 'Admin_d'):?>                  
+                <div class="school-selector">
+                    <label for="szkola">Szkoła: </label>
+                    <script>
+                        function formin(thi){
+                            setTimeout(() => {
+                                thi.form.submit();
+                            }, 100);
+                        }                        
+                    </script>
+                    <form action="" method="post">
+                        <input type="hidden" name="school_filter" value="">                                                                                             
+                        <input type="text" class="school-search" id="szkola" placeholder="Wyszukaj szkołę" autocomplete="off" required onchange="formin(this)">
+                    </form>
+                    <div class="dropdown"></div>
+                </div>
+            <?php endif;?>
+
             <form action="" method="post">
                 <label for="klasa_filter">Klasa:</label>
                 <select id='klasa_filter' name="klasa_filter" onchange="this.form.submit()">
                     <?php if (!empty($allClass)): ?>
-                        <?php foreach(array_unique($allClass) as $osoba): ?>
+                        <?php foreach(array_unique($allClass) as $osoba): if($osoba != ""): ?>
                             <option value="<?= htmlspecialchars($osoba) ?>" <?=($Klasa != '' and htmlspecialchars($osoba) == $Klasa) ? 'selected' : "" ?>> <?= htmlspecialchars($osoba)?></option>
-                        <?php endforeach; ?>
+                        <?php endif; endforeach;?>
                     <?php endif ?>
                     <option value="all" <?=$Klasa == 'all' ? 'selected' : ''?>>WSZYSCY</option>
                 </select>
             </form>
-            <?php if ($_SESSION['Rola_user'] == 'Admin') : ?>
+            <?php if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d') : ?>
             <form action="" method="post">
                 <label for="rola_filter">Rola:</label>
                 <select id="rola_filter" name="rola_filter" onchange="this.form.submit()">
@@ -654,36 +794,95 @@ if ($conn->connect_errno != 0) {
                     <th>✅</th>
                     <th>Imie</th>
                     <th>Nazwisko</th>
-                    <th>Klasa</th>
-                    <th>Email</th>
-                    <?php if ($_SESSION['Rola_user'] == 'Admin') : ?>
-                    <th>Rola</th>
-                    <?php foreach ($subjectColumns as $subject): ?>
-                        <th><?= htmlspecialchars($subject) ?></th>
-                    <?php endforeach; ?>
+                    <th>Email</th>                                        
+                    <?php if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d') : ?>
+                        <th>Rola</th>
                     <?php endif; ?>
-                    <?php if ($_SESSION['Rola_user'] == 'Nauczyciel') : ?>
-                        <?php
-                            $array = explode(';',$_SESSION['Czego_uczy_user']);
-                            foreach ($array as $subject){
-                                echo "<th>".htmlspecialchars($subject)."</th>";
-                            }
-                        ?>
+                    <?php if ($_SESSION['Rola_user'] == 'Admin_d') : ?>
+                        <th>Szkoła
+                                <input type="checkbox" id="g4123">
+                        </th>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const rows = document.querySelectorAll('table table tr'); 
+                                const checkbox = document.getElementById('g4123'); 
+                                rows.forEach(row => {
+                                    const cells = row.querySelectorAll('td, th'); 
+                                    cells.forEach(cell => {
+                                        cell.style.display = 'none'; 
+                                    });
+                                });
+                            });
+                            document.getElementById('g4123').addEventListener('change', function () {
+                                const rows = document.querySelectorAll('table table tr'); 
+                                const checkbox = document.getElementById('g4123'); 
+                                rows.forEach(row => {
+                                    const cells = row.querySelectorAll('td, th'); 
+                                    cells.forEach(cell => {
+                                        cell.style.display = checkbox.checked ? 'table-cell' : 'none'; 
+                                    });
+                                });
+                            });
+                        </script>
+                    <?php else: ?>
+                        <th>Klasa</th>
+                        <?php if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d') : ?>
+                            <?php foreach ($subjectColumns as $subject): ?>
+                                <th><?= htmlspecialchars($subject) ?></th>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                        <?php if ($_SESSION['Rola_user'] == 'Nauczyciel') : ?>
+                            <?php
+                                $array = explode(';',$_SESSION['Czego_uczy_user']);
+                                foreach ($array as $subject){
+                                    echo "<th>".htmlspecialchars($subject)."</th>";
+                                }
+                            ?>
+                        <?php endif; ?>
+                        <th>Akcje</th>
+                        <th>Średnia</th>
+                        <th>Średnia Roczna</th>
                     <?php endif; ?>
-                    <th>Akcje</th>
-                    <th>Średnia</th>
-                    <th>Średnia Roczna</th>
+                    <?php if($_SESSION['Rola_user'] == 'Admin_d'): ?>
+                        <th>Akcje</th>
+                    <?php endif; ?>
                 </tr>
                 <?php if (!empty($rows)): ?>
+                
                     <?php foreach($rows as $osoba): ?>
                     <tr >                           
                         <td><input type="checkbox" class="user-checkbox" value="<?= htmlspecialchars($osoba['id'])?>" <?= in_array($osoba['id'], $selectedIds) ? 'checked' : ''?>></td>
                         <td><?= htmlspecialchars($osoba['Imie']) ?></td>
                         <td><?= htmlspecialchars($osoba['Nazwisko']) ?></td>
-                        <td><?= htmlspecialchars($osoba['Klasa']) ?></td>
-                        <td><?= htmlspecialchars($osoba['E-mail']) ?></td>
-                        <?php if($_SESSION['Rola_user'] == 'Admin') : ?>
+                        <td><?= htmlspecialchars($osoba['E-mail']) ?></td>                                                
+                        <?php if($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d') : ?>
                         <td><?= htmlspecialchars($osoba['Rola']) ?></td>
+                        <?php endif;?>
+                        <?php if ($_SESSION['Rola_user'] == 'Admin_d') : ?>
+                            <td> 
+                                <table>                                    
+                                    <tr>                   
+                                        <th>Klasa</th>
+                                        <?php if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d') : ?>
+                                        <?php foreach ($subjectColumns as $subject): ?>
+                                            <th><?= htmlspecialchars($subject) ?></th>
+                                        <?php endforeach; ?>
+                                        <?php endif; ?>
+                                        <?php if ($_SESSION['Rola_user'] == 'Nauczyciel') : ?>
+                                            <?php
+                                                $array = explode(';',$_SESSION['Czego_uczy_user']);
+                                                foreach ($array as $subject){
+                                                    echo "<th>".htmlspecialchars($subject)."</th>";
+                                                }
+                                            ?>
+                                        <?php endif; ?>
+                                        <th>Akcje</th>
+                                        <th>Średnia</th>
+                                        <th>Średnia Roczna</th>
+                                    </tr>                            
+                        <?php endif;?>
+                        <td><?= htmlspecialchars($osoba['Klasa']) ?></td>
+                        <?php if($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d') : ?>
                         <?php foreach ($subjectColumns as $subject): ?>
                             <td>
                                 <div class="oceny">
@@ -801,10 +1000,10 @@ if ($conn->connect_errno != 0) {
                                 <select name="new_role" onchange="this.form.submit()">
                                     <option value="Uczen" <?= $osoba['Rola'] == 'Uczen' ? 'selected' : '' ?>>Uczen</option>
                                     <option value="Nauczyciel" <?= $osoba['Rola'] == 'Nauczyciel' ? 'selected' : '' ?>>Nauczyciel</option>
-                                    <option value="Admin" <?= $osoba['Rola'] == 'Admin' ? 'selected' : '' ?>>Admin</option>
+                                    <?php if($_SESSION['Rola_user'] == 'Admin_d'):?> <option value="Admin"<?= $osoba['Rola'] == 'Admin' ? 'selected' : '' ?>>Admin</option> <?php endif; ?>
                                 </select>
                             </form>
-                            <?php endif?>
+                            <?php endif;?>
                             <form action="add_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post" class="form-inline">
                                 <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
                                 <select name="subject_grade">
@@ -817,7 +1016,7 @@ if ($conn->connect_errno != 0) {
                                 </select>
                                 <input type="number" name="subject_waga" placeholder="Waga Oceny">
                                 <select name="subject">
-                                    <?php if ($_SESSION['Rola_user'] == 'Admin') : ?>
+                                    <?php if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d') : ?>
                                     <?php foreach ($subjectColumns as $subject): ?>
                                         <option value="<?= $subject ?>"><?= $subject ?></option>
                                     <?php endforeach; ?>
@@ -834,7 +1033,7 @@ if ($conn->connect_errno != 0) {
                                 <input type="text" name="opis" placeholder="opis">
                                 <button type="submit">Dodaj ocenę</button>
                             </form>
-                            <?php if($osoba['Rola'] === 'Nauczyciel'): ?>
+                            <?php if($osoba['Rola'] == 'Nauczyciel'): ?>
                                 <form action="Czego_uczy.php?page=<?= $page ?>&search=<?= $search?>" method="post">
                                     Czego uczy:
                                     <input type="hidden" name="id_osoby" value="<?=$osoba['id']?>">
@@ -853,7 +1052,7 @@ if ($conn->connect_errno != 0) {
                                 </form>
                             <?php endif; ?>                                                        
 
-                            <?php if ($osoba['Rola'] === 'Uczen' and $_SESSION['Rola_user'] === 'Admin'): ?>
+                            <?php if ($osoba['Rola'] == 'Uczen' and ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d')): ?>
                             <br>
                                 <form action="Set_klasa.php" method="post">
                                     <label for="Klasa">Ustaw Klasę: </label>
@@ -866,7 +1065,7 @@ if ($conn->connect_errno != 0) {
                         <td>
                             <?php 
                             $srednie = [];
-                            if ($_SESSION['Rola_user'] == 'Admin'){
+                            if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d'){
                                 foreach ($subjectColumns as $subject){
                                     echo $subject.': ';
                                     if (isset($osoba[$subject]) && $osoba[$subject] !== '') {
@@ -936,6 +1135,54 @@ if ($conn->connect_errno != 0) {
                             ?>
                         </td>
 
+                        <?php if ($_SESSION['Rola_user'] == 'Admin_d') : ?>                        
+                            </td>                
+                            </table>                            
+                        <?php endif; ?>
+
+                        <?php if ($_SESSION['Rola_user'] == 'Admin_d') : ?>
+                            <td>   
+                                <form method="post" action="update_role.php?page=<?= $page ?>&search=<?= $search?>">
+                                    <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
+                                    <select name="new_role" onchange="this.form.submit()">
+                                        <option value="Uczen" <?= $osoba['Rola'] == 'Uczen' ? 'selected' : '' ?>>Uczen</option>
+                                        <option value="Nauczyciel" <?= $osoba['Rola'] == 'Nauczyciel' ? 'selected' : '' ?>>Nauczyciel</option>
+                                        <?php if($_SESSION['Rola_user'] == 'Admin_d'):?> <option value="Admin"<?= $osoba['Rola'] == 'Admin' ? 'selected' : '' ?>>Admin</option> <?php endif; ?>
+                                    </select>
+                                </form>
+
+                                <form action="Admin_user_update_school.php" method="post">
+                                    <div class="school-selector">
+                                        <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
+                                        <input type="hidden" name="school_id">                                        
+                                        Aktualnie: <?php echo $osoba['nazwa_szkoly'] == '' ? 'Brak' : $osoba['nazwa_szkoly']  ?>
+                                        <br>
+                                        <label for="school_search">Wpisz nazwę lub kod szkoły:</label>                                        
+                                        <input type="text" class="school-search" placeholder="Wyszukaj szkołę" autocomplete="off" required>
+
+                                        <div class="dropdown"></div>
+                                    </div>
+                                    <button type="submit">Zapisz Szkołę</button>
+                                </form>
+
+                                <br>
+
+                                <form action="" method="post">
+                                        <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
+                                        <input type="hidden" name="delete_user" value="1">
+                                        <input type="submit" value="Usuń Użytkownika" onclick="return confirm('Czy na pewno chcesz usunąć tego użytkownika?')">                                    
+                                </form>
+
+                                <form action="" method="post">
+                                        <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
+                                        <input type="hidden" name="reset_password" value="1">
+                                        <input type="submit" value="Resetuj Hasło" onclick="return confirm('Czy na pewno chcesz zresetować hasło tego użytkownika?')">                                    
+                                </form>
+
+
+
+                            </td>
+                        <?php endif; ?>
                     </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -969,7 +1216,7 @@ if ($conn->connect_errno != 0) {
             <br>
             <br>
             <form method="post" class="mega_form">
-                <?php if ($_SESSION['Rola_user'] == 'Admin'): ?>
+                <?php if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d'): ?>
                 <label>
                     <input type="checkbox" name="czy_new_role" class="toggle-label">    
                     Zmień rolę urzytkownika(ów): 
@@ -994,7 +1241,7 @@ if ($conn->connect_errno != 0) {
                     </select>
                     <input type="number" name="subject_waga" placeholder="Waga Oceny">
                     <select name="subject">
-                        <?php if ($_SESSION['Rola_user'] == 'Admin') : ?>
+                        <?php if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d') : ?>
                         <?php foreach ($subjectColumns as $subject): ?>
                             <option value="<?= $subject ?>"><?= $subject ?></option>
                         <?php endforeach; ?>
@@ -1010,17 +1257,22 @@ if ($conn->connect_errno != 0) {
                     </select>
                     <input type="text" name="subject_opis" placeholder="Opis">
                 </label>
-                <?php if ($_SESSION['Rola_user'] == 'Admin'): ?>
+                <?php if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d'): ?>
                 <br>
                 <label>
                     <input type="checkbox" name="czy_new_uczy" class="toggle-label"> 
                     Czego uczy:
-                    <select name="Czego_uczy">
-                        <option value="" selected></option>
-                        <?php foreach ($subjectColumns as $subject): ?>
-                            <option value="<?= $subject ?>"><?= $subject ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="dropdown-checkbox">
+                        <button type="button" class="dropdown-btn">Wybierz przedmioty</button>
+                        <div class="dropdown-content">
+                            <?php foreach ($subjectColumns as $subject): ?>
+                                <label>
+                                    <input type="checkbox" name="Czego_uczy1[]" value="<?= $subject ?>" >
+                                    <?= $subject ?>                                            
+                                </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                 </label>
                 <br>
                 <label>
@@ -1034,7 +1286,7 @@ if ($conn->connect_errno != 0) {
             </form>
             
             <br>
-            <?php if ($_SESSION['Rola_user'] == 'Admin'): ?>
+            <?php if ($_SESSION['Rola_user'] == 'Admin_d'): ?>
             <br>
             <br>
             <form action="add_subject.php?page=<?= $page ?>&search=<?= $search?>" method="post" class="form-inline">
@@ -1074,7 +1326,7 @@ if ($conn->connect_errno != 0) {
                 <input type="text" id="opis" name="opis" placeholder="Opis">
                 <input type="number" name="waga" id="waga" placeholder="Waga">
                 <select name="przedmiot">
-                    <?php if ($_SESSION['Rola_user'] == 'Admin') : ?>
+                    <?php if ($_SESSION['Rola_user'] == 'Admin' or $_SESSION['Rola_user'] == 'Admin_d') : ?>
                     <?php foreach ($subjectColumns as $subject): ?>
                         <option value="<?= $subject ?>"><?= $subject ?></option>
                     <?php endforeach; ?>
@@ -1116,6 +1368,70 @@ if ($conn->connect_errno != 0) {
         </div>
 
         <script>
+            const searchInputs = document.querySelectorAll('.school-search');
+
+            searchInputs.forEach((input) => {
+                const parentDiv = input.closest('.school-selector');
+                const dropdown = parentDiv.querySelector('.dropdown');
+
+                input.addEventListener('input', function () {
+                    const query = this.value;
+
+                    if (query.length >= 2) {
+                        fetch(`search_schools.php?query=${encodeURIComponent(query)}`)
+                            .then((response) => response.json())
+                            .then((data) => {
+                                dropdown.innerHTML = ''; 
+
+                                data.forEach((school) => {
+                                    const item = document.createElement('div');
+                                    item.classList.add('dropdown-item');
+                                    item.textContent = `${school.nazwa_szkoly}`;
+                                    item.dataset.value = school.Id_szkoly;
+
+                                    item.addEventListener('click', () => {
+                                        input.value = `${school.nazwa_szkoly}`;
+                                        try{
+                                            parentDiv.querySelector('input[name="school_id"]').value = school.Id_szkoly;
+                                        } catch (error) {
+                                            parentDiv.querySelector('input[name="school_filter"]').value = school.Id_szkoly;
+                                        }
+                                        dropdown.style.display = 'none';
+                                    });
+
+                                    dropdown.appendChild(item);
+                                });
+
+                                const item = document.createElement('div');
+                                    item.classList.add('dropdown-item');
+                                    item.textContent = `Brak`;
+                                    item.dataset.value = '.';
+
+                                    item.addEventListener('click', () => {
+                                        input.value = `Brak`;
+                                        parentDiv.querySelector('input[name="school_id"]').value = '.';
+                                        dropdown.style.display = 'none';
+                                    });
+
+                                    dropdown.appendChild(item);
+
+                                dropdown.style.display = 'block'; 
+                            })
+                            .catch((error) => console.error('Błąd:', error));
+                    } else {
+                        dropdown.style.display = 'none'; 
+                    }
+                });
+
+                document.addEventListener('click', (event) => {
+                    if (!parentDiv.contains(event.target)) {
+                        dropdown.style.display = 'none';
+                    }
+                });
+            });
+
+
+
 
             var bulk = <?php echo $bulk ? 'true' : 'false'; ?>;
             if (bulk) {
@@ -1259,11 +1575,10 @@ if ($conn->connect_errno != 0) {
                         subject_opis: formData.get('subject_opis'),
                         subject: formData.get('subject'),
                         czy_new_uczy: formData.get('czy_new_uczy'),
-                        Czego_uczy: formData.get('Czego_uczy'),
+                        Czego_uczy: formData.getAll('Czego_uczy1[]'),
                         czy_new_class: formData.get('czy_new_class'),
                         Klasa: formData.get('Klasa')
                     };
-
                     if (combinedIds.length > 0) {
                         fetch('process_selected_users.php?page=' + page + '&search=' + search, {
                             method: 'POST',
@@ -1280,7 +1595,7 @@ if ($conn->connect_errno != 0) {
                         })
                         .then(data => {
                             if (data.success) {
-                                window.location.href = window.location.href;
+                                window.location.href = window.location.href;                                
                             } else {
                                 alert('Error performing action: ' + data.message);
                             }
@@ -1312,3 +1627,4 @@ if ($conn->connect_errno != 0) {
 </body>
 </html>
 <?php $conn->close(); ?>
+<?php include "disabled_functions.html"?>

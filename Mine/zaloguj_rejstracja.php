@@ -42,8 +42,7 @@ if (isset($_SESSION['Login']) && $_SESSION['Login']) {
 
         label{
             font-size: 12px;
-            line-height: 20px;
-            margin: 10px 0 20px;
+            line-height: 10px;
             display: inline-block;
         }
         label input{
@@ -64,15 +63,8 @@ if (isset($_SESSION['Login']) && $_SESSION['Login']) {
             letter-spacing: 0.5px;
             margin: 10px 0 20px;
         }
-
-        span.error {
-            color: #ff464e;
-            font-size: 12px;
-            display: block;
-            text-align: left;
-            margin-top: -8px;
-            margin-bottom: 10px;
-        }
+        
+        
 
         a {
             color: #333;
@@ -114,12 +106,46 @@ if (isset($_SESSION['Login']) && $_SESSION['Login']) {
             border-color: #FFFFFF;
         }
 
+        .register-block:has(input:focus) span.error  {
+            background-color: #FFFFFF;
+            font-size: 12px;
+
+        }
+
+        .login-block:has(input:focus) span.error  {
+            background-color: #FFFFFF;
+            font-size: 12px;
+
+        }
+
+        span.error {
+            color: #ff464e;
+            font-size: 13px;
+            text-align: left;
+            position: absolute;
+            background-color: #FFFFFFA1;
+            border-radius: 4px;
+            padding: 1px 3px;
+            transition: all 0.5s;
+        }
+
+        .register-block:has(label) span.error {
+            position: relative;
+            width: 300px;
+            margin-top: -15px;
+            margin-bottom: 10px;
+            font-size: 13px !important;
+        }
+        .register-block:has(label){
+            margin-bottom: 10px;
+        }
+
+
         form {
             background-color: #FFFFFF;
             padding: 10px 50px;
             display: flex;
             justify-content: center;
-            align-items: center;
             flex-direction: column;
             min-height:100% ;
             text-align: center;
@@ -298,51 +324,89 @@ if (isset($_SESSION['Login']) && $_SESSION['Login']) {
         <div class="form-container sign-up-container">
             <form action="register.php" method="post">
                 <h1>Załóż konto</h1>
-                <input type="text" name="imie" placeholder="Imię" value="<?php echo isset($_SESSION['checking_imie']) ? $_SESSION['checking_imie'] : ''; ?>"><br>
-                <?php
-                    if (isset($_SESSION['imie_e'])) {
-                        echo '<span class="error">' . $_SESSION['imie_e'] . '</span>';
-                        unset($_SESSION['imie_e']);
-                    }
-                ?>
-                <input type="text" name="nazwisko" placeholder="Nazwisko" value="<?php echo isset($_SESSION['checking_nazwisko']) ? $_SESSION['checking_nazwisko'] : ''; ?>"><br>
-                <?php
-                    if (isset($_SESSION['nazwisko_e'])) {
-                        echo '<span class="error">' . $_SESSION['nazwisko_e'] . '</span>';
-                        unset($_SESSION['nazwisko_e']);
-                    }
-                ?>
-                <input type="email" name="email" placeholder="E-mail" value="<?php echo isset($_SESSION['checking_email']) ? htmlspecialchars($_SESSION['checking_email']) : ''; ?>"><br>
-                <?php
-                    if (isset($_SESSION['email_e'])) {
-                        echo '<span class="error">' . $_SESSION['email_e'] . '</span>';
-                        unset($_SESSION['email_e']);
-                    }
-                ?>
-                <input type="password" name="haslo" placeholder="Hasło" value="<?php echo isset($_SESSION['checking_haslo']) ? htmlspecialchars($_SESSION['checking_haslo']) : ''; ?>"><br>
-                <?php
-                    if (isset($_SESSION['haslo_e'])) {
-                        echo '<span class="error">' . $_SESSION['haslo_e'] . '</span>';
-                        unset($_SESSION['haslo_e']);
-                    }
-                ?>
-                <input type="password" name="haslo1" placeholder="Powtórz hasło" value="<?php echo isset($_SESSION['checking_haslo1']) ? htmlspecialchars($_SESSION['checking_haslo1']) : ''; ?>"><br>
-                <?php
-                    if (isset($_SESSION['haslo1_e'])) {
-                        echo '<span class="error">' . $_SESSION['haslo1_e'] . '</span>';
-                        unset($_SESSION['haslo1_e']);
-                    }
-                ?>
-                <label>
-                Zapoznałam(em) się z <a href="Regulamin.html" target="_blank" class="inny">Regulaminem</a>
-                <input type="checkbox" name="regulamin" <?= isset($_SESSION['checking_checkbox']) ? 'checked' : ''?> >
-                </label>
-                <?php
-                    if (isset($_SESSION['checkbox_e'])) {
-                        echo '<span class="error">' . $_SESSION['checkbox_e'] . '</span>';
-                        unset($_SESSION['checkbox_e']);
-                    }
-                ?>
+
+                <div class="register-block">
+                    <span class="error">
+                    <?php
+                        if (isset($_SESSION['imie_e'])) {
+                            echo $_SESSION['imie_e'];
+                            unset($_SESSION['imie_e']);
+                        }
+                    ?>
+                    </span>
+                    <input type="text" name="imie" placeholder="Imię" value="<?php echo isset($_SESSION['checking_imie']) ? $_SESSION['checking_imie'] : ''; ?>"><br>
+                </div>
+                <div class="register-block">
+                    <span class="error">
+                    <?php
+                        if (isset($_SESSION['nazwisko_e'])) {
+                            echo $_SESSION['nazwisko_e'];
+                            unset($_SESSION['nazwisko_e']);
+                        }
+                    ?>
+                    </span>
+                    <input type="text" name="nazwisko" placeholder="Nazwisko" value="<?php echo isset($_SESSION['checking_nazwisko']) ? $_SESSION['checking_nazwisko'] : ''; ?>"><br>
+                </div>
+                <div class="register-block">
+                    <span class="error">
+                    <?php
+                        if (isset($_SESSION['email_e'])) {
+                            echo $_SESSION['email_e'] ;
+                            unset($_SESSION['email_e']);
+                        }
+                    ?>
+                    </span>
+                    <input type="email" name="email" placeholder="E-mail" value="<?php echo isset($_SESSION['checking_email']) ? htmlspecialchars($_SESSION['checking_email']) : ''; ?>"><br>
+                </div>
+                <div class="register-block">
+                    <span class="error">
+                    <?php
+                        if (isset($_SESSION['haslo_e'])) {
+                            echo  $_SESSION['haslo_e'] ;
+                            unset($_SESSION['haslo_e']);
+                        }
+                    ?>
+                    </span>
+                    <input type="password" name="haslo" placeholder="Hasło" value="<?php echo isset($_SESSION['checking_haslo']) ? htmlspecialchars($_SESSION['checking_haslo']) : ''; ?>"><br>
+                </div>
+                <div class="register-block">
+                    <span class="error">
+                    <?php
+                        if (isset($_SESSION['haslo1_e'])) {
+                            echo $_SESSION['haslo1_e'] ;
+                            unset($_SESSION['haslo1_e']);
+                        }
+                    ?>
+                    </span>
+                    <input type="password" name="haslo1" placeholder="Powtórz hasło" value="<?php echo isset($_SESSION['checking_haslo1']) ? htmlspecialchars($_SESSION['checking_haslo1']) : ''; ?>"><br>
+                </div>
+                <div class="register-block">
+                    <span class="error">
+                    <?php
+                        if (isset($_SESSION['kod_szkoly_e'])) {
+                            echo  $_SESSION['kod_szkoly_e'] ;
+                            unset($_SESSION['kod_szkoly_e']);
+                        }
+                    ?>
+                    </span>
+                    <input type="text" name="kod_szkoly" placeholder="Podaj kod szkoły" value="<?php echo isset($_SESSION['checking_kod_szkoly']) ? htmlspecialchars($_SESSION['checking_kod_szkoly']) : ''; ?>"><br>
+                </div>
+                <div class="register-block">
+                    <label>
+                        Zapoznałam(em) się z <a href="Regulamin.html" target="_blank" class="inny">Regulaminem</a>
+                        <input type="checkbox" name="regulamin" <?= isset($_SESSION['checking_checkbox']) ? 'checked' : ''?> >
+                    </label>
+                    <br>
+                    <span class="error">
+                        <?php
+                            if (isset($_SESSION['checkbox_e'])) {
+                                echo $_SESSION['checkbox_e'];
+                                unset($_SESSION['checkbox_e']);
+                            }
+                        ?>
+                    </span>
+                </div>
+
                 <button type="submit">Zarejestruj się</button>
                 <p>
                     <?php
@@ -353,24 +417,175 @@ if (isset($_SESSION['Login']) && $_SESSION['Login']) {
                     ?>
                 </p>
             </form>
+
+            <script>
+                let Imie = document.querySelector('input[name="imie"]');
+                let Nazwisko = document.querySelector('input[name="nazwisko"]');
+                let Email = document.querySelector('input[name="email"]');
+                let Haslo = document.querySelector('input[name="haslo"]');
+                let Haslo1 = document.querySelector('input[name="haslo1"]');
+                let Kod_szkoly = document.querySelector('input[name="kod_szkoly"]');
+                let Regulamin = document.querySelector('input[name="regulamin"]');
+
+
+                Imie.addEventListener('input', () => {
+                    const regex = /^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/;
+                    const errorSpan = Imie.previousElementSibling;
+                    let isok = true; 
+                    if (!regex.test(Imie.value)) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Imię może składać się tylko z liter';
+                        }
+                        isok = false;
+                    }
+                    if (Imie.value.includes(' ')) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Imię nie może posiadać spacji';
+                        }
+                        isok = false;
+                    }
+                    
+                    if (isok || Imie.value.length == 0) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = '';
+                        }
+                    }
+                    
+                });
+                
+                Nazwisko.addEventListener('input', () => {
+                    const regex = /^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/;
+                    const errorSpan = Nazwisko.previousElementSibling;
+                    let isok = true; 
+                    if (!regex.test(Nazwisko.value)) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Nazwisko może składać się tylko z liter';
+                        }
+                        isok = false;
+                    }
+                    if (Nazwisko.value.includes(' ') && Nazwisko.value.length > 0) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Nazwisko nie może posiadać spacji';
+                        }
+                        isok = false;
+                    }
+                    
+                    if (isok || Nazwisko.value.length == 0){
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = '';
+                        }
+                    }
+                });
+                
+                Email.addEventListener('input', () => {
+                    const errorSpan = Email.previousElementSibling;
+                    let isok = true; 
+                    if (!Email.value.includes('@')) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Błędna struktura E-mail';
+                        }
+                        isok = false;
+                    }
+                    if (isok || Email.value.length == 0) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = '';
+                        }
+                    }
+                });
+                
+                Haslo.addEventListener('input', () => {
+                    const errorSpan = Haslo.previousElementSibling;
+                    let isok = true; 
+                    if (Haslo.value.length < 8) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Hasło musi mieć minimum 8 znaków';
+                        }
+                        isok = false;
+                    }
+                    if (Haslo.value.includes(' ')) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Hasło nie może posiadać spacji';
+                        }
+                        isok = false;
+                    }
+                    if (isok || Haslo.value.length == 0) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = '';
+                        }
+                    }
+                });
+                
+                Haslo1.addEventListener('input', () => {
+                    const errorSpan = Haslo1.previousElementSibling;
+                    let isok = true; 
+                    if (Haslo1.value !== Haslo.value) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Hasła nie są takie same';
+                        }
+                        isok = false;
+                    }
+                    if (isok || Haslo1.value.length == 0) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = '';
+                        }
+                    }
+                });
+                
+                Kod_szkoly.addEventListener('input', () => {
+                    const errorSpan = Kod_szkoly.previousElementSibling;
+                    let isok = true; 
+                    if (Kod_szkoly.value.length == 0) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Nie podano kodu szkoły';
+                        }
+                        isok = false;
+                    }
+                    if (isok || Kod_szkoly.value.length == 0) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = '';
+                        }
+                    }
+                });
+                
+                Regulamin.addEventListener('change', () => {
+                    const errorSpan = Regulamin.closest('.register-block').querySelector('.error');
+                    let isok = true; 
+                    if (!Regulamin.checked) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = 'Zapoznanie się z regulaminem jest wymagane';
+                        }
+                        isok = false;
+                    }
+                    if (isok || Regulamin.checked) {
+                        if (errorSpan && errorSpan.classList.contains('error')) {
+                            errorSpan.textContent = '';
+                        }
+                    }
+                });
+            </script>
         </div>
         <div class="form-container sign-in-container">
             <form action="login.php" method="post">
                 <h1>Zaloguj się</h1>
-                <input type="email" name="login_l" placeholder="E-mail" value="<?php echo isset($_SESSION['checking_login_l']) ? htmlspecialchars($_SESSION['checking_login_l']) : ''; ?>"><br>
-                <?php
-                    if (isset($_SESSION['login_e'])) {
-                        echo '<span class="error">' . $_SESSION['login_e'] . '</span>';
-                        unset($_SESSION['login_e']);
-                    }
-                ?>
-                <input type="password" name="haslo_l" placeholder="Hasło" value="<?php echo isset($_SESSION['checking_haslo_l']) ? htmlspecialchars($_SESSION['checking_haslo_l']) : ''; ?>"><br>
-                <?php
-                    if (isset($_SESSION['haslo_el'])) {
-                        echo '<span class="error">' . $_SESSION['haslo_el'] . '</span>';
-                        unset($_SESSION['haslo_el']);
-                    }
-                ?>
+
+                <div class="login-block">
+                    <?php
+                        if (isset($_SESSION['login_e'])) {
+                            echo '<span class="error">' . $_SESSION['login_e'] . '</span>';
+                            unset($_SESSION['login_e']);
+                        }
+                    ?>
+                    <input type="email" name="login_l" placeholder="E-mail" value="<?php echo isset($_SESSION['checking_login_l']) ? htmlspecialchars($_SESSION['checking_login_l']) : ''; ?>"><br>
+                </div>
+                <div class="login-block">
+                    <?php
+                        if (isset($_SESSION['haslo_el'])) {
+                            echo '<span class="error">' . $_SESSION['haslo_el'] . '</span>';
+                            unset($_SESSION['haslo_el']);
+                        }
+                    ?>
+                    <input type="password" name="haslo_l" placeholder="Hasło" value="<?php echo isset($_SESSION['checking_haslo_l']) ? htmlspecialchars($_SESSION['checking_haslo_l']) : ''; ?>"><br>
+                </div>
                 <button type="submit">Zaloguj się</button>
                 <p>
                     <?php
@@ -419,3 +634,4 @@ if (isset($_SESSION['Login']) && $_SESSION['Login']) {
     </script>
 </body>
 </html>
+<?php include "disabled_functions.html"?>

@@ -75,7 +75,10 @@ if ($result->num_rows > 0) {
         .full-content {
             color: #333;
             font-size: 1.2em;
-            margin-top: 20px;
+            margin-top: 20px; 
+        }
+        .full-content p {
+            overflow-wrap: break-word;
         }
         .back-link {
             display: inline-block;
@@ -129,12 +132,19 @@ if ($result->num_rows > 0) {
             font-size: 2em;
             color: #fff;
             cursor: pointer;
+            transition: all .3s ease-out;
         }
 
         .fullscreen-img .close {
             top: 20px;
             right: 20px;
             user-select: none;
+            z-index: 2;
+            padding: 5px 20px;
+        }
+        .fullscreen-img .close:hover {
+            background-color: #AF4C50;
+            border-radius: 50%;
         }
 
         .fullscreen-img .prev, .fullscreen-img .next {
@@ -143,15 +153,26 @@ if ($result->num_rows > 0) {
         }
 
         .fullscreen-img .prev {
-            left: 20px;
+            left: 0;
             user-select: none;
-            padding: 20px;
+            padding: 20px 20px 20px 40px;
+            height: 100%;
+            display: grid;
+            place-items: center;
         }
 
         .fullscreen-img .next {
-            padding: 20px;
-            right: 20px;
+            right: 0;
             user-select: none;
+            padding: 20px 40px 20px 20px;
+            height: 100%;
+            display: grid;
+            place-items: center;
+        }
+        .fullscreen-img .prev:hover, 
+        .fullscreen-img .next:hover {
+            background-color: #555;
+            z-index: -1;
         }
         .authoranddate {
             margin-top: 10px;
@@ -316,17 +337,17 @@ if ($result->num_rows > 0) {
     </header>
     <div class="container">
         <img src="<?php echo htmlspecialchars($article['zdjecie_header']); ?>" alt="Zdjęcię artykułu">
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin' && $article['is_popular'] == '0') : ?>
+        <?php if (  isset($_SESSION['Rola_user']) && (($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == "Admin_d") && $article['is_popular'] == '0')) : ?>
             <button class="popular-button" onclick="PopularArticle()">Dodaj do popularnych</button>
-        <?php elseif(isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin' && $article['is_popular'] == '1') : ?>
+        <?php elseif(  isset($_SESSION['Rola_user']) && (($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == "Admin_d") && $article['is_popular'] == '1')) : ?>
             <button class="popular-button" onclick="PopularArticle()">Usuń z popularnych</button> 
-        <?php endif; if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin'): ?>
+        <?php endif; if (  isset($_SESSION['Rola_user']) && (($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == "Admin_d") ||  (isset($_SESSION['user_id']) && $article['id_autora'] == $_SESSION['user_id']))): ?>
             <form action="deletepost_all.php" method="POST">
                 <input type="hidden" name="id_article" value="<?=$article['id']?>">
                 <button type="submit" class="popular-button red">Usuń ogłoszenie</button>
             </form>
         <?php endif; ?>
-        <?php if ((isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') ||  (isset($_SESSION['user_id']) && $article['id_autora'] == $_SESSION['user_id'])): ?>
+        <?php if (  isset($_SESSION['Rola_user']) && (($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == "Admin_d") ||  (isset($_SESSION['user_id']) && $article['id_autora'] == $_SESSION['user_id']))): ?>
             <button onclick="EditArticle()" class="popular-button blue">Edytuj ogłoszenie</button>
             <div id="EditModal" class="EditModal">
                 <div class="EditModalContent">
@@ -389,7 +410,7 @@ if ($result->num_rows > 0) {
                 $sql = "SELECT * FROM users WHERE id = '$autor'";
                 $result = $conn->query($sql);
                 $author_info = $result->fetch_assoc();
-                echo '<span class="author">Autor: ' . htmlspecialchars($author_info['Imie'] . ' ' . $author_info['Nazwisko']) . '</span>';
+                echo '<span class="author">Autor: ' . htmlspecialchars((@$author_info['Imie'] ?? "Brak") . ' ' .( @$author_info['Nazwisko'] ?? "-")) . '</span>';
                 if ($article['is_edited']){
                     echo '<span class="date">Data: ' . $article['data'] . " Data ostatniej edycji: ". $article['data_edited'] . '</span>';
                 }else{
@@ -412,7 +433,7 @@ if ($result->num_rows > 0) {
 
 
     <script>
-        <?php if(isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
+        <?php if(isset($_SESSION['Rola_user']) &&( $_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == "Admin_d")) : ?>
             function PopularArticle() {
                 fetch('make_popular.php', {
                     method: 'POST',
@@ -482,3 +503,4 @@ if ($result->num_rows > 0) {
     <?php include 'footer.php'; ?>
 </body>
 </html>
+<?php include "disabled_functions.html"?>

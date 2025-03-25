@@ -2,6 +2,12 @@
 session_start();
 require_once 'db.php';
 
+if (!isset($_SESSION['Login']) && !$_SESSION['Login'] && $_SESSION['Rola_user'] != 'Admin_d') {
+    header('Location: zaloguj.php');
+    exit();
+}
+
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $tytul = $_POST['edit_header'];
     $tresc = $_POST['edit_tresc'];

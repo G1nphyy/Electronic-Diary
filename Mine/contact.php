@@ -318,3 +318,4 @@ require_once 'db.php';
     <?php include 'footer.php'; ?>
 </body>
 </html>
+<?php include "disabled_functions.html"?>

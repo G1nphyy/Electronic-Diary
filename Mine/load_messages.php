@@ -12,7 +12,8 @@ $category = isset($_GET['category']) ? $_GET['category'] : 'all';
 $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : '';
 
 if (!in_array($category, ['sent', 'received', 'all']) || !is_numeric($user_id)) {
-    die("Invalid input");
+    header('Location: zaloguj.php');
+    exit();
 }
 
 $messages = [];

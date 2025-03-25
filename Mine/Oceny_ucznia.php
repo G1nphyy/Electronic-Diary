@@ -54,6 +54,7 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
     }
 
     $ocenySubjects = array_slice($oceny, 2);
+    array_pop($ocenySubjects);
     $subjectAverages = [];
     $overallTotalWeighted = 0;
     $overallTotalWeight = 0;
@@ -68,8 +69,8 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
 
     $overallAverage = $overallTotalWeight ? $overallTotalWeighted / $overallTotalWeight : 0;
 } else {
-    echo "Nie podano ID ucznia.";
-    die();
+    header('Location: zaloguj.php');
+    exit();
 }
 ?>
 
@@ -425,3 +426,4 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
     
 </body>
 </html>
+<?php include "disabled_functions.html"?>

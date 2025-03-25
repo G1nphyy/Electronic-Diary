@@ -119,3 +119,4 @@ if(isset($_SESSION['Login']) and $_SESSION['Login']){
     
 </body>
 </html>
+<?php include "disabled_functions.html"?>

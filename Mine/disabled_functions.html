@@ -1,0 +1,197 @@
+<!-- disabled_functions.html -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+  .accessibility-toggle {
+    position: fixed;
+    top: 60%;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    z-index: 998;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s;
+    overflow: hidden;
+  }
+
+  .accessibility-toggle:hover {
+    background-color: #555;
+  }
+
+  .accessibility-panel {
+    position: fixed;
+    top: 60%;
+    right: 60px;
+    width: 220px;
+    max-height: 350px;
+    padding: 10px;
+    background: #f4f4f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    font-family: Arial, sans-serif;
+    z-index: 998;
+    overflow: auto;
+  }
+
+  .accessibility-panel.show {
+    display: flex;
+  }
+
+  .accessibility-panel button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fff;
+    background-color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background-color 0.3s;
+  }
+
+  .accessibility-panel button:hover {
+    background-color: #555;
+  }
+
+  /* Efekt dla high-contrast */
+  .high-contrast::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    backdrop-filter: contrast(2);
+    z-index: 10000;
+  }
+
+  /* Efekt dla grayscale */
+  .grayscale::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    backdrop-filter: grayscale(1);
+    z-index: 10000;
+  }
+
+  /* Efekt dla negative-contrast */
+  .negative-contrast::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    backdrop-filter: invert(1) contrast(1.2);
+    z-index: 10000;
+  }
+</style>
+
+<div class="accessibility-toggle" onclick="toggleAccessibilityPanel()" title="Ułatwienia dostępu">
+  <i class="fas fa-wheelchair"></i>
+</div>
+
+<div class="accessibility-panel" id="accessibilityPanel">
+  <button onclick="changeFontSize(1)">
+    <i class="fas fa-search-plus"></i> Zwiększ czcionkę
+  </button>
+  <button onclick="changeFontSize(-1)">
+    <i class="fas fa-search-minus"></i> Zmniejsz czcionkę
+  </button>
+  <button onclick="toggleHighContrast()">
+    <i class="fas fa-adjust"></i> Wysoki kontrast
+  </button>
+  <button onclick="toggleGrayscale()">
+    <i class="fas fa-tint"></i> Skala szarości
+  </button>
+  <button onclick="toggleNegativeContrast()">
+    <i class="fas fa-low-vision"></i> Negatywny kontrast
+  </button>
+  <button onclick="resetAccessibility()">
+    <i class="fas fa-undo"></i> Reset
+  </button>
+</div>
+
+<script>
+  // Ładowanie ustawień z localStorage
+  document.addEventListener("DOMContentLoaded", function() {
+    const fontSize = localStorage.getItem("fontSize");
+    const highContrast = localStorage.getItem("highContrast") === "true";
+    const grayscale = localStorage.getItem("grayscale") === "true";
+    const negativeContrast = localStorage.getItem("negativeContrast") === "true";
+
+    if (fontSize) document.body.style.fontSize = fontSize + 'px';
+    if (highContrast) document.body.classList.add("high-contrast");
+    if (grayscale) document.body.classList.add("grayscale");
+    if (negativeContrast) document.body.classList.add("negative-contrast");
+  });
+
+  function toggleAccessibilityPanel() {
+    document.getElementById('accessibilityPanel').classList.toggle('show');
+  }
+
+  let fontSize = parseInt(localStorage.getItem("fontSize")) || 16;
+
+  function changeFontSize(change) {
+    fontSize += change;
+    const items = document.querySelectorAll("*");
+    items.forEach(function(item) {
+      item.style.fontSize = fontSize + 'px';
+    });
+    localStorage.setItem("fontSize", fontSize);
+  }
+  function toggleHighContrast() {
+    document.body.classList.toggle("high-contrast");
+    const isHighContrast = document.body.classList.contains("high-contrast");
+    localStorage.setItem("highContrast", isHighContrast);
+  }
+
+  // Przełączanie skali szarości
+  function toggleGrayscale() {
+    document.body.classList.toggle("grayscale");
+    const isGrayscale = document.body.classList.contains("grayscale");
+    localStorage.setItem("grayscale", isGrayscale);
+  }
+
+  // Przełączanie negatywnego kontrastu
+  function toggleNegativeContrast() {
+    document.body.classList.toggle("negative-contrast");
+    const isNegativeContrast = document.body.classList.contains("negative-contrast");
+    localStorage.setItem("negativeContrast", isNegativeContrast);
+  }
+
+  // Resetowanie ustawień
+  function resetAccessibility() {
+    fontSize = 16;
+    const items = document.querySelectorAll("*");
+    items.forEach(function(item) {
+      item.style.fontSize = '';
+    });
+    document.body.classList.remove("high-contrast", "grayscale", "negative-contrast");
+
+    // Usuwanie ustawień z localStorage
+    localStorage.removeItem("fontSize");
+    localStorage.removeItem("highContrast");
+    localStorage.removeItem("grayscale");
+    localStorage.removeItem("negativeContrast");
+  }
+</script>

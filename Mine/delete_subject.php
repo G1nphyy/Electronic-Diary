@@ -1,6 +1,6 @@
 <?php
 session_start();
-if ($_SESSION['Rola_user'] !== 'Admin') {
+if ($_SESSION['Rola_user'] !== 'Admin' || $_SESSION['Rola_user'] !== 'Admin_d') {
     header('Location: zaloguj.php');
     exit();
 }
@@ -104,3 +104,4 @@ $usun = isset($_POST['usun']) ? $_POST['usun'] : header("Location: change_roles.
     </div>
 </body>
 </html>
+<?php include "disabled_functions.html"?>

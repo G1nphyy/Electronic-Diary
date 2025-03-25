@@ -16,7 +16,17 @@ if ($conn->connect_error) {
     die('Error connecting to database: '.$conn->connect_error);
 }
 
-$sql = 'SELECT `Klasa` FROM `plany lekcji`';
+$sql = 'SELECT `Klasa` FROM `plany lekcji` ';
+if($_SESSION['Rola_user'] != 'Admin_d'){
+    $szkola = $_SESSION['Szkola_user'];
+    $sql.= " WHERE `nalezy_id_szkoly` =  '$szkola'";
+}
+
+if($_SERVER['REQUEST_METHOD'] == 'POST' and isset($_POST['szkola'])) {
+    $szkola = $_POST['szkola'];
+    $sql.= " WHERE `nalezy_id_szkoly` =  '$szkola'";
+}
+
 $result = $conn->query($sql);
 
 $rows = [];
@@ -42,6 +52,10 @@ $days = ['Poniedzialek', 'Wtorek', 'Sroda', 'Czwartek', 'Piatek'];
 
 
 $sql = "SELECT * from users WHERE Rola = 'Nauczyciel'";
+if(isset($szkola)) {
+    $sql.= " AND `nalezy_id_szkoly` =  '$szkola'";
+}
+
 $result = $conn->query($sql);
 $rows_teachers = [];
 if ($result) {
@@ -226,6 +240,28 @@ if ($result) {
         <?php include 'nav.php'?>
     </header>
     <div class="container">
+        <?php if($_SESSION['Rola_user'] == 'Admin_d'): ?>
+            <?php 
+                $sql = "SELECT * FROM schools";
+                $result1 = $conn->query($sql);
+                $rows1 = [];
+                if ($result) {
+                    while ($row = $result1->fetch_assoc()) {
+                        $rows1[] = $row;
+                    }
+                }
+                if (true):?>
+                <form action="" method="post">
+                    <label for="szkola">Wybierz Szkołę:</label>
+                    <select id="szkola" name="szkola" onchange="this.form.submit()">
+                        <?php foreach ($rows1 as $row): ?>
+                            <option value="<?= $row['Id_szkoly']?>" <?= isset($_POST['szkola']) ? ($row['Id_szkoly'] == $_POST['szkola'] ? "selected" : "") : "" ?>><?= $row['nazwa_szkoly']?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </form>
+                <?php endif; ?>
+
+        <?php endif; ?>
     <?php 
         if ($_SESSION['Rola_user'] == 'Nauczyciel') {
             $is = false;            
@@ -240,6 +276,7 @@ if ($result) {
                 <a href="Zobacz_plan.php?id=<?= htmlspecialchars($_SESSION['user_id']) ?>" class="my_plan">Zobacz swój plan</a>
     <?php endif; } ?>
 
+        <br>
 
 
         <table>
@@ -275,12 +312,23 @@ if ($result) {
                 <?php endforeach ?>
             </tbody>
         </table>
-        <?php if ($_SESSION['Rola_user'] === 'Admin'): ?>
+        <?php if ($_SESSION['Rola_user'] === 'Admin' or $_SESSION['Rola_user'] === 'Admin_d' ): ?>
         <h1>Dodaj Plan Lekcji</h1>
         <?php if (isset($_SESSION['message'])): ?>
             <div class="message"><?php print_r($_SESSION['message']); unset($_SESSION['message'])?></div>
         <?php endif; ?>
         <form id="scheduleForm" action="process_form.php" method="post">
+            <?php if ($_SESSION['Rola_user'] =='Admin_d'): ?>
+                <div class="form-group">
+                    <label for="szkola_add">Szkoła:</label>
+                    <select id="szkola_add" name="szkola_add">
+                        <?php foreach ($rows1 as $row): ?>
+                            <option value="<?= $row['Id_szkoly']?>" <?= isset($_POST['szkola']) ? ($row['Id_szkoly'] == $_POST['szkola'] ? "selected" : "") : "" ?>><?= $row['nazwa_szkoly']?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            <?php endif;?>
+
             <div class="form-group">
                 <label for="klasa">Klasa:</label>
                 <input type="text" id="klasa" name="klasa" required>
@@ -309,7 +357,8 @@ if ($result) {
                                             if ($result) {
                                                 $rowse = $result->fetch_all(MYSQLI_ASSOC);
                                                 $subjectColumns = !empty($rowse) ? array_keys($rowse[0]) : [];
-                                                $subjectColumns = array_slice($subjectColumns, 2);
+                                                $subjectColumns = array_slice($subjectColumns, 2 );
+                                                array_pop($subjectColumns);
                                             } else {
                                                 echo "Error retrieving data: " . $conn->error;
                                                 $rowse = [];
@@ -357,3 +406,4 @@ if ($result) {
     <?php include 'footer.php' ?>
 </body>
 </html>
+<?php include "disabled_functions.html"?>

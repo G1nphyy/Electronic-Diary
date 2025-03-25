@@ -52,11 +52,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $gallery_images_json = json_encode($gallery_image_paths);
 
-    $stmt = $conn->prepare("INSERT INTO ogloszenia (tytul, tresc, id_autora, zdjecie_header, zdjecia, data, is_popular, is_edited) VALUES (?, ?, ?, ?, ?, ?, 0, 0)");
+    $stmt = $conn->prepare("INSERT INTO ogloszenia (tytul, tresc, id_autora, zdjecie_header, zdjecia, data, is_popular, is_edited, nalezy_id_szkoly) VALUES (?, ?, ?, ?, ?, ?, 0, 0, ?)");
     if ($stmt) {
         $data = date("Y-m-d H:i:s");
-        $stmt->bind_param("ssisss", $tytul, $tresc, $id_autora, $header_image_path, $gallery_images_json, $data);
-        
+        $stmt_A = $conn->query("SELECT * FROM schools WHERE Id_szkoly = " . $_SESSION['Szkola_user']);
+        $stmt_A = $stmt_A->fetch_assoc();
+        $szkola_id = $stmt_A["Id_szkoly"] ?? 0;
+        if ($_SESSION['Rola_user'] == 'Admin_d'){
+            $szkola_id = $_SESSION["school_filter"];
+        }
+
+        $stmt->bind_param("ssisssi", $tytul, $tresc, $id_autora, $header_image_path, $gallery_images_json, $data, $szkola_id);
+
         if ($stmt->execute()) {
             header('Location: index.php');
         } else {
@@ -64,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $stmt->close();
-    } else {
+    }else {
         echo "Wystąpił błąd podczas przygotowywania zapytania: " . $conn->error;
     }
 

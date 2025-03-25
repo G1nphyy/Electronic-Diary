@@ -1,13 +1,21 @@
 <?php
 session_start(); 
 require_once 'db.php';
+
+$conn = new mysqli($server_name, $user_name, $password, $database);
+$var = isset($_POST["school_filter"]) ? $_POST["school_filter"] : (isset($_SESSION["school_filter"]) ? $_SESSION["school_filter"] : 0);
+$_SESSION["school_filter"] = $var;
+$result = $conn -> query("SELECT * FROM schools WHERE Id_szkoly = '$var'");
+
+$result = $result -> fetch_assoc();
+$conn -> close();
 ?>
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DDDziennik - Wpisy</title>
+    <title><?= $result['nazwa_szkoly'] ?? 'DDDziennik' ?> - Wpisy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         * {
@@ -34,6 +42,15 @@ require_once 'db.php';
             margin: 0;
             font-size: 2.5em;
             letter-spacing: 2px;
+            width: 35ch;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        header .h1{
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         nav {
             background-color: #444;
@@ -65,6 +82,20 @@ require_once 'db.php';
         }
         nav a:hover, nav button:hover {
             background-color: #555;
+        }
+        .read-more-link{
+            color: #333;
+            text-decoration: none;
+            margin: 10px 10px 10px 0px;
+            padding: 8px 12px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: inline-block;
+        }
+        .read-more-link:hover{
+            background-color: #333;
+            color: #fff;
         }
         .container {
             max-width: 800px;
@@ -192,7 +223,38 @@ require_once 'db.php';
                 font-size: 0.8em !important;
             }
         }
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
+        .school-selector{
+            position: absolute;
+            top: 110%;
+            background-color: #fff !important;
+            z-index: 1;
+            padding: 10px 15px;
+            box-shadow: 0 0 10px  rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+        }
+        .school-search{
+            width: 100%;
+            padding: 5px;
+            border-radius: 5px;
+            box-sizing: border-box;
+            border: 1px solid rgba(0, 0, 0, 0.5);
+        }
+        .dropdown{
+            padding: 10px 3px;
+        }
+        .dropdown div{
+            padding: 5px;
+            border-bottom: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .dropdown div:hover{
+            background-color: #f0f0f0;
+            transition: background-color 0.3s ease;
+        }
+        nav div button {
+            height: 100%;
+        }
+        <?php if (isset($_SESSION['Rola_user']) && ($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == 'Nauczyciel' || $_SESSION['Rola_user'] == 'Admin_d')) : ?>
 
             form[action="upload_image.php"] {
                 position: fixed;
@@ -271,9 +333,9 @@ require_once 'db.php';
 
     </style>
     <script>
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
+        <?php if (isset($_SESSION['Rola_user']) && ($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == 'Nauczyciel' || $_SESSION['Rola_user'] == 'Admin_d')) : ?>
             function addForm() {
-                if (!document.body.querySelector('form')){
+                if (!document.body.querySelector('body > form')){
                     const form = document.createElement('form');
                     form.action = 'upload_image.php';
                     form.method = 'post';
@@ -335,8 +397,8 @@ require_once 'db.php';
                     form.appendChild(inputSubmit);
 
                     document.body.appendChild(form);
-                }else if(document.body.querySelector('form') && document.body.querySelector('form').style.display == 'none'){
-                    document.body.querySelector('form').style.display = 'block';
+                }else if(document.body.querySelector('body > form') && document.body.querySelector('body > form').style.display == 'none'){
+                    document.body.querySelector('body > form').style.display = 'block';
                 }
             }
         <?php endif; ?>
@@ -344,7 +406,9 @@ require_once 'db.php';
 </head>
 <body>
     <header>
-        <h1>DDDziennik</h1>
+        <div class="h1">
+            <h1><?= $result['nazwa_szkoly'] ?? 'DDDziennik' ?></h1>
+        </div>
         <?php if(isset($_SESSION['Login']) && $_SESSION['Login'] == true){
             include 'nav.php';
         }
@@ -355,9 +419,27 @@ require_once 'db.php';
         <a href="all_article.php"><i class="fas fa-pen"></i> Wpisy</a>
         <a href="contact.php"><i class="fas fa-phone"></i> Kontakt</a>
         <a href="about.php"><i class="fas fa-info-circle"></i> O nas</a>
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
+        <?php if (isset($_SESSION['Rola_user']) && ($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == 'Nauczyciel' || $_SESSION["Rola_user"] == 'Admin_d')) : ?>
             <button onclick="addForm()"><i class="fas fa-edit"></i> Dodaj Wpis</button>
         <?php endif; ?>
+        <div>
+            <button onclick="searchSchool()"><i class="fas fa-search"></i> Szukaj szkoły</button>
+            <div class="school-selector" style="display: none">
+                <label for="szkola">Szkoła: </label>
+                <script>
+                    function formin(thi){
+                        setTimeout(() => {
+                            thi.form.submit();
+                        }, 100);
+                    }                        
+                </script>
+                <form action="" method="post">
+                    <input type="hidden" name="school_filter" value="">                                                                                             
+                    <input type="text" class="school-search" id="szkola" placeholder="Wyszukaj szkołę" autocomplete="off" required onchange="formin(this)">
+                </form>
+                <div class="dropdown"></div>
+            </div>
+        </div>
         <?php if (!isset($_SESSION['Login']) || $_SESSION['Login'] == false) : ?>
             <div class="auth">
                 <a class='login' href="zaloguj_rejstracja.php">Moje konto</a>
@@ -367,7 +449,9 @@ require_once 'db.php';
     <div class="container">
         <?php 
         $conn = @new mysqli($server_name, $user_name, $password, $database);
-        $sql = "SELECT * FROM ogloszenia ORDER BY data DESC";
+        $var = isset($_POST["school_filter"]) ? $_POST["school_filter"] : (isset($_SESSION["school_filter"]) ? $_SESSION["school_filter"] : 0);
+        $_SESSION["school_filter"] = $var;
+        $sql = "SELECT * FROM ogloszenia WHERE nalezy_id_szkoly = '$var' ORDER BY data DESC";
         $result = $conn->query($sql);
         
         while ($ogloszenie = $result->fetch_assoc()) {
@@ -384,3 +468,75 @@ require_once 'db.php';
     <?php include 'footer.php'; ?>
 </body>
 </html>
+<script>
+
+function searchSchool() {
+    const element = document.querySelector(".school-selector");
+    element.style.display = element.style.display === "none" ? "block" : "none";
+}
+
+
+const searchInputs = document.querySelectorAll('.school-search');
+
+searchInputs.forEach((input) => {
+    const parentDiv = input.closest('.school-selector');
+    const dropdown = parentDiv.querySelector('.dropdown');
+
+    input.addEventListener('input', function () {
+        const query = this.value;
+
+        if (query.length >= 2) {
+            fetch(`search_schools.php?query=${encodeURIComponent(query)}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    dropdown.innerHTML = ''; 
+
+                    data.forEach((school) => {
+                        const item = document.createElement('div');
+                        item.classList.add('dropdown-item');
+                        item.textContent = `${school.nazwa_szkoly}`;
+                        item.dataset.value = school.Id_szkoly;
+
+                        item.addEventListener('click', () => {
+                            input.value = `${school.nazwa_szkoly}`;
+                            try{
+                                parentDiv.querySelector('input[name="school_id"]').value = school.Id_szkoly;
+                            } catch (error) {
+                                parentDiv.querySelector('input[name="school_filter"]').value = school.Id_szkoly;
+                            }
+                            dropdown.style.display = 'none';
+                        });
+
+                        dropdown.appendChild(item);
+                    });
+
+                    const item = document.createElement('div');
+                        item.classList.add('dropdown-item');
+                        item.textContent = `Brak`;
+                        item.dataset.value = '.';
+
+                        item.addEventListener('click', () => {
+                            input.value = `Brak`;
+                            parentDiv.querySelector('input[name="school_id"]').value = '.';
+                            dropdown.style.display = 'none';
+                        });
+
+                        dropdown.appendChild(item);
+
+                    dropdown.style.display = 'block'; 
+                })
+                .catch((error) => console.error('Błąd:', error));
+        } else {
+            dropdown.style.display = 'none'; 
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!parentDiv.contains(event.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+});
+
+</script>
+<?php include "disabled_functions.html"?>

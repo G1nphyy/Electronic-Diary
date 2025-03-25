@@ -27,39 +27,78 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
         $_SESSION['rola_filter'] = isset($_POST['rola_filter']) ? $_POST['rola_filter'] : (isset($_SESSION['rola_filter']) ? $_SESSION['rola_filter'] : 'allR');
         $rola_filter = $_SESSION['rola_filter'];
 
+
+        $_SESSION['school_filter'] = isset($_POST['school_filter']) ? $_POST['school_filter'] : (isset($_SESSION['school_filter']) ? $_SESSION['school_filter'] : 'allS');
+        $school_filter = $_SESSION['school_filter'];
+        if($_SESSION["Rola_user"] != "Admin_d"){
+            $school_filter = $_SESSION["Szkola_user"];
+            $_SESSION['school_filter'] = $school_filter;
+        }
+
         if($_SESSION['Rola_user'] == 'Nauczyciel'){
             $rola_filter = 'Uczen';
         }
         
-        $allIdsSql = "SELECT id FROM users WHERE Rola != 'Admin'";
+        if($_SESSION['Rola_user'] == 'Nauczyciel'){
+            $allIdsSql = "SELECT id FROM users WHERE Rola = 'Uczen' and  nalezy_id_szkoly = '$school_filter'";
+        }elseif($_SESSION['Rola_user'] == 'Admin'){
+            $allIdsSql = "SELECT id FROM users WHERE Rola != 'Admin' AND Rola != 'Admin_d' and nalezy_id_szkoly = '$school_filter'";
+        }elseif($_SESSION['Rola_user'] == 'Admin_d'){
+            $allIdsSql = "SELECT id FROM users WHERE Rola != 'Admin_d'";
+        }
         if ($search) {
             $allIdsSql .= " AND (Imie LIKE '%$search%' OR Nazwisko LIKE '%$search%' OR `E-mail` LIKE '%$search%')";
         }
         if ($klasa_filter != 'all') {
             $Klasa = $klasa_filter;
-            $allIdsSql .= "AND users.Klasa LIKE '$Klasa'";
+            $allIdsSql .= " AND users.Klasa LIKE '$Klasa'";
         }else{
             $Klasa = 'all';
         }
         if ($rola_filter != 'allR') {
             $Rola = $rola_filter;
-            $allIdsSql .= "AND users.Rola LIKE '$Rola'";
+            $allIdsSql .= " AND users.Rola LIKE '$Rola'";
         }else{
             $Rola = 'allR';
+        }
+        if($school_filter != 'allS') {
+            $allIdsSql .= " AND users.nalezy_id_szkoly = '$school_filter'";
+            $school = $school_filter;
+        }else{
+            $school = '';
         }
 
         $allIdsResult = $conn->query($allIdsSql);
         $allIds = $allIdsResult->fetch_all(MYSQLI_ASSOC);
         $allIds = array_column($allIds, 'id');
 
-
-        $allClassSql = "SELECT Klasa FROM users WHERE Rola != 'Admin' ORDER BY Klasa";
+        if($_SESSION['Rola_user'] == "Nauczyciel"){
+            $allClassSql = "SELECT Klasa FROM users WHERE Rola = 'Uczen' and  nalezy_id_szkoly = '$school_filter'";
+        }elseif($_SESSION['Rola_user'] == "Admin"){
+            $allClassSql = "SELECT Klasa FROM users WHERE Rola != 'Admin' AND Rola != 'Admin_d' and  nalezy_id_szkoly = '$school_filter' ";
+        }elseif($_SESSION['Rola_user'] == "Admin_d"){
+            $allClassSql = "SELECT Klasa FROM users WHERE Rola != 'Admin_d'";
+        }
+        
+        if(!empty($school)){
+            $allClassSql .= " AND nalezy_id_szkoly = '$school'";
+        }
+        $allClassSql.= " ORDER BY Klasa";
         $allClassResult = $conn->query($allClassSql);
         $allClass = $allClassResult->fetch_all(MYSQLI_ASSOC);
         $allClass = array_column($allClass, 'Klasa');
 
-
-        $allRolesSql = "SELECT Rola FROM users WHERE Rola != 'Admin' ORDER BY Rola";
+        if($_SESSION['Rola_user'] == "Nauczyciel"){
+            $allRolesSql = "SELECT Rola FROM users WHERE Rola = 'Uczen' and  nalezy_id_szkoly = '$school_filter'";
+        }elseif($_SESSION['Rola_user'] == 'Admin'){
+            $allRolesSql = "SELECT Rola FROM users WHERE Rola != 'Admin' AND Rola != 'Admin_d' and  nalezy_id_szkoly = '$school_filter' ";
+        }elseif($_SESSION['Rola_user'] == 'Admin_d'){
+            $allRolesSql = "SELECT Rola FROM users WHERE Rola != 'Admin_d' ";
+        }
+        if (!empty($school)){
+            $allRolesSql .= " AND nalezy_id_szkoly = '$school'";
+        }
+        $allRolesSql .= " ORDER BY Rola";
         $allRolesResult = $conn->query($allRolesSql);
         $allRoles = $allRolesResult->fetch_all(MYSQLI_ASSOC);
         $allRoles = array_column($allRoles, 'Rola');
@@ -75,20 +114,33 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
         }
         $offset = ($page - 1) * $limit;
 
+
         $sql = "SELECT users.*, users_oceny.*
                 FROM users 
-                LEFT JOIN users_oceny ON users.id = users_oceny.id_ucznia 
-                WHERE users.Rola != 'Admin'";
+                LEFT JOIN users_oceny ON users.id = users_oceny.id_ucznia ";
+
+        
+        if($_SESSION['Rola_user'] == 'Nauczyciel' ){
+            $sql .= " WHERE users.Rola = 'Uczen' and  users.nalezy_id_szkoly = '$school_filter'";
+        }elseif ($_SESSION['Rola_user'] == 'Admin'){
+            $sql .= " WHERE users.Rola != 'Admin' and users.Rola != 'Admin_d' and users.nalezy_id_szkoly = '$school_filter'";
+        } elseif ($_SESSION['Rola_user'] == 'Admin_d'){
+            $sql .= " WHERE users.Rola != 'Admin_d'";
+        }
 
         if ($search) {
             $sql .= " AND (users.Imie LIKE '%$search%' OR users.Nazwisko LIKE '%$search%' OR users.`E-mail` LIKE '%$search%')";
         }
         if ($klasa_filter != 'all') {
-            $sql .= "AND users.Klasa LIKE '$Klasa'";
+            $sql .= " AND users.Klasa LIKE '$Klasa'";
         }
         if ($rola_filter != 'allR') {
             $Rola = $rola_filter;
-            $sql .= "AND users.Rola LIKE '$Rola'";
+            $sql .= " AND users.Rola LIKE '$Rola'";
+        }
+        
+        if($school_filter != 'allS' and !empty($school)) {
+            $sql.= " AND users.nalezy_id_szkoly LIKE '$school'";
         }
 
         $sql .= " LIMIT $limit OFFSET $offset";
@@ -98,23 +150,32 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
             $rows = $result->fetch_all(MYSQLI_ASSOC);
 
             $subjectColumns = !empty($rows) ? array_keys($rows[0]) : [];
-            $subjectColumns = array_slice($subjectColumns, 11);
+            $subjectColumns = array_slice($subjectColumns, 12);
         } else {
             echo "Error retrieving data: " . $conn->error;
             $rows = [];
             $subjectColumns = [];
         }
-
-        $countSql = "SELECT COUNT(*) AS total FROM users WHERE Rola != 'Admin'";
+        if($_SESSION['Rola_user'] == "Nauczyciel"){
+            $countSql = "SELECT COUNT(*) AS total FROM users WHERE Rola = 'Uczen' and  nalezy_id_szkoly = '$school_filter'";
+        }elseif ($_SESSION['Rola_user'] == "Admin"){
+            $countSql = "SELECT COUNT(*) AS total FROM users WHERE Rola != 'Admin' and Rola != 'Admin_d' and  nalezy_id_szkoly = '$school_filter'";
+        }elseif ($_SESSION['Rola_user'] == "Admin_d"){
+            $countSql = "SELECT COUNT(*) AS total FROM users WHERE Rola != 'Admin_d'";
+        }
+        
         if ($search) {
             $countSql .= " AND (Imie LIKE '%$search%' OR Nazwisko LIKE '%$search%' OR `E-mail` LIKE '%$search%')";
         }
         if ($klasa_filter != 'all') {
-            $countSql .= "AND users.Klasa LIKE '$Klasa'";
+            $countSql .= " AND users.Klasa LIKE '$Klasa'";
         }
         if ($rola_filter != 'allR') {
             $Rola = $rola_filter;
-            $countSql .= "AND users.Rola LIKE '$Rola'";
+            $countSql .= " AND users.Rola LIKE '$Rola'";
+        }
+        if($school_filter!= 'allS' and !empty($school)) {
+            $countSql .= " AND users.nalezy_id_szkoly LIKE '$school'";
         }
 
         $totalCount = $conn->query($countSql)->fetch_assoc()['total'];
@@ -446,6 +507,41 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
                 width: 90%;
             }
         }
+        .school-search {
+            padding: 5px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            display: none; 
+            z-index: 10;
+        }
+
+        .dropdown-item {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f0f0f0;
+        }
+        td form[action="Admin_user_update_school.php"] { 
+            display: block;            
+        }
+        .school-selector {
+            position: relative;
+        }
 </style>
 
 </head>
@@ -461,6 +557,25 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
                 <input id="oho" type="text" name="search" placeholder="Szukaj..." value="<?= htmlspecialchars($search) ?>">
                 <button type="submit">Szukaj</button>
             </form>
+
+            <?php if ($_SESSION["Rola_user"] == "Admin_d"):?>                  
+                <div class="school-selector">
+                    <label for="szkola">Szkoła: </label>
+                    <script>
+                        function formin(thi){
+                            setTimeout(() => {
+                                thi.form.submit();
+                            }, 100);
+                        }                        
+                    </script>
+                    <form action="" method="post">
+                        <input type="hidden" name="school_filter" value="">                                                                                             
+                        <input type="text" class="school-search" id="szkola" placeholder="Wyszukaj szkołę" autocomplete="off" required onchange="formin(this)">
+                    </form>
+                    <div class="dropdown"></div>
+                </div>
+            <?php endif;?>
+
             <form action="" method="post" id="filters">
                 <label for="ile_ludzi">Ilość wyświetlanych osób:</label>
                 <select id="ile_ludzi" name="ilu_ludzi" onchange="this.form.submit()">
@@ -541,7 +656,7 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
 
                 <br><br>
                 <label>Status:</label>
-                <label><input type="radio" name="status" value="Obecny" required> Obecny </label>
+                <label><input type="radio" name="status" value="Obency" required> Obecny </label>
                 <label><input type="radio" name="status" value="Spóźniony"> Spóźniony </label>
                 <label><input type="radio" name="status" value="Nieobecny"> Nieobecny </label>
                 <input type="date" name="data" id="data">
@@ -555,8 +670,9 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
                         $rows = $result->fetch_all(MYSQLI_ASSOC);
                         $subjectColumns = !empty($rows) ? array_keys($rows[0]) : [];
                         $subjectColumns = array_slice($subjectColumns, 2);
-                        $array = explode(',',$_SESSION['Czego_uczy_user']) ;
-                    if($_SESSION["Rola_user"] == "Admin"):
+                        array_pop($subjectColumns);
+                        $array = explode(';',$_SESSION['Czego_uczy_user']) ;
+                    if($_SESSION["Rola_user"] == "Admin" or $_SESSION["Rola_user"] == "Admin_d"):
                     ?>
                     <?php foreach ($subjectColumns as $subject): ?>
                         <option value="<?= $subject ?>"><?= $subject ?></option>
@@ -674,8 +790,9 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
                     $rows = $result->fetch_all(MYSQLI_ASSOC);
                     $subjectColumns = !empty($rows) ? array_keys($rows[0]) : [];
                     $subjectColumns = array_slice($subjectColumns, 2);
-                    $array = explode(',',$_SESSION['Czego_uczy_user']) ;
-                if($_SESSION["Rola_user"] == "Admin"):
+                    array_pop($subjectColumns);
+                    $array = explode(';',$_SESSION['Czego_uczy_user']) ;
+                if($_SESSION["Rola_user"] == "Admin" or $_SESSION["Rola_user"] == "Admin_d"):
                 ?>
                 <?php foreach ($subjectColumns as $subject): ?>
                     <option value="<?= $subject ?>"><?= $subject ?></option>
@@ -767,6 +884,70 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
 </body>
 </html>
 <script>
+    const searchInputs = document.querySelectorAll('.school-search');
+
+    searchInputs.forEach((input) => {
+        const parentDiv = input.closest('.school-selector');
+        const dropdown = parentDiv.querySelector('.dropdown');
+
+        input.addEventListener('input', function () {
+            const query = this.value;
+
+            if (query.length >= 2) {
+                fetch(`search_schools.php?query=${encodeURIComponent(query)}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        dropdown.innerHTML = ''; 
+
+                        data.forEach((school) => {
+                            const item = document.createElement('div');
+                            item.classList.add('dropdown-item');
+                            item.textContent = `${school.nazwa_szkoly}`;
+                            item.dataset.value = school.Id_szkoly;
+
+                            item.addEventListener('click', () => {
+                                input.value = `${school.nazwa_szkoly}`;
+                                try{
+                                    parentDiv.querySelector('input[name="school_id"]').value = school.Id_szkoly;
+                                } catch (error) {
+                                    parentDiv.querySelector('input[name="school_filter"]').value = school.Id_szkoly;
+                                }
+                                dropdown.style.display = 'none';
+                            });
+
+                            dropdown.appendChild(item);
+                        });
+
+                        const item = document.createElement('div');
+                            item.classList.add('dropdown-item');
+                            item.textContent = `Brak`;
+                            item.dataset.value = '.';
+
+                            item.addEventListener('click', () => {
+                                input.value = `Brak`;
+                                parentDiv.querySelector('input[name="school_id"]').value = '.';
+                                dropdown.style.display = 'none';
+                            });
+
+                            dropdown.appendChild(item);
+
+                        dropdown.style.display = 'block'; 
+                    })
+                    .catch((error) => console.error('Błąd:', error));
+            } else {
+                dropdown.style.display = 'none'; 
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!parentDiv.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    });
+
+
+
 
     dragElement(document.getElementById("multi-add-box"));
     function dragElement(elmnt) {
@@ -855,3 +1036,4 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
         });
     });
 </script>
+<?php include "disabled_functions.html"?>

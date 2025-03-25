@@ -2,6 +2,7 @@
     
     <link rel="shortcut icon" href="<?= isset($_SESSION['Icon_user']) && $_SESSION['Icon_user'] == '' ? 'favicon.ico' : htmlspecialchars($_SESSION['Icon_user'])?>" >
 </head>
+
 <div class="nav" onclick="openNav()">
 <?= isset($_SESSION['Icon_user']) && $_SESSION['Icon_user'] == '' ? '&#9776;' : '<img src="'.htmlspecialchars($_SESSION['Icon_user']). '"></img>' ?>
 </div>
@@ -9,20 +10,50 @@
         <div class="content-nav">
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
             <a href="welcome.php">Strona główna</a>
-            <?php if($_SESSION['Rola_user'] !== 'Uczen'){
-                echo '<a href="change_roles.php">Tablela Uczniów</a>';
-                echo '<a href="dodaj_plan_lekcji.php">Plany Lekcji</a>';
-                echo '<a href="frekfencja.php">Frekwencja</a>';
-            }?>
-            <?php if($_SESSION['Rola_user'] == 'Uczen'): ?>
-                <a href="Zobacz_plan.php?klasa=<?=$_SESSION['Klasa_user']?>">Plan Lekcji</a>
-                <a href="Oceny_ucznia.php">Moje Oceny</a>
-                <a href="frekwencja_ucznia.php">Frekwencja</a>
-            <?php endif; ?>
-            <a href="index.php">Aktualności</a>
-            <a href="Tests.php">Sprawdziany</a>
-            <a href="Wiadomosci.php">Wiadomosci</a>
-            <a href="Info.php">Informacje</a>
+
+            <?php if($_SESSION['Rola_user'] != 'Admin_d'): ?>
+                <?php if($_SESSION['Rola_user'] == 'Admin'){
+                    echo '<a href="change_roles.php">Tablela Osób</a>';
+                    echo '<a href="dodaj_plan_lekcji.php">Plany Lekcji</a>';
+                    echo '<a href="frekfencja.php">Frekwencja</a>';
+                }
+                ?>
+                <?php if($_SESSION['Rola_user'] == 'Nauczyciel'){
+                    echo '<a href="change_roles.php">Tablela Uczniów</a>';
+                    echo '<a href="dodaj_plan_lekcji.php">Plany Lekcji</a>';
+                    echo '<a href="frekfencja.php">Frekwencja</a>';
+                }?>
+                <?php if($_SESSION['Rola_user'] == 'Uczen'): ?>
+                    <a href="Zobacz_plan.php?klasa=<?=$_SESSION['Klasa_user']?>">Plan Lekcji</a>
+                    <a href="Oceny_ucznia.php">Moje Oceny</a>
+                    <a href="frekwencja_ucznia.php">Frekwencja</a>
+                <?php endif; ?>
+                <a href="index.php">Aktualności</a>
+                <a href="Tests.php">Sprawdziany</a>
+                <a href="Wiadomosci.php">Wiadomosci</a>
+                <a href="Info.php">Informacje</a>
+            <?php else: ?>
+                <div class="school">
+                    <details>
+                        <summary>Szkoła</summary>
+                        <a href="change_roles.php">Tablela Osób</a>
+                        <a href="dodaj_plan_lekcji.php">Plany Lekcji</a>
+                        <a href="frekfencja.php">Frekwencja</a>
+                        <a href="index.php">Aktualności</a>
+                        <a href="Tests.php">Sprawdziany</a>
+                    </details>
+                </div>
+                <div class="admin">
+                    <details>
+                        <summary>Admin</summary>
+                        <a href="Admin_new_school.php">Dodaj szkołę</a>
+                        <a href="Admin_new_person.php">Dodaj osobe</a>
+                        <a href="Admin_all_schools.php">Tabela szkół</a>
+                    </details>
+                </div>
+                <a href="Wiadomosci.php">Wiadomosci</a>
+                <a href="Info.php">Informacje</a>
+            <?php endif;?>
         </div>
         <div class="logout">
             <a href="logout.php">Wyloguj się</a>
@@ -185,6 +216,26 @@
         width: auto;
         border-radius: 10px 0 0 10px;
         text-wrap: nowrap;
+    }
+    .sidenav summary{
+        padding: 8px 32px 8px 8px;
+        text-decoration: none;
+        font-size: 25px;
+        color: #818181;
+        transition: 0.3s;
+        border: none;
+        margin: 0 0 8px 16px;
+        width: auto;
+        border-radius: 10px 0 0 10px;
+        text-wrap: nowrap;
+    }
+    .sidenav details[open=""]{
+        border: 1px solid #818181;
+        margin: 5px 10px;
+        border-radius: 5px;
+    }
+    .sidenav details{
+        transition: all 0.3s;
     }
 
     .sidenav a:hover {

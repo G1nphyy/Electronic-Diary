@@ -11,18 +11,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     switch ($action) {
         case 'cancel':
             $Nauczyciel = $_POST['Nauczyciel'];
-            $sql = "INSERT INTO zmiany_plan_lekcji VALUES (NULL, 'Odwolaj', '$data', '$klasa', '$indexLekcji $Nauczyciel')";
+            $sql = "INSERT INTO zmiany_plan_lekcji VALUES (NULL, 'Odwolaj', '$data', '$klasa', '$indexLekcji $Nauczyciel', 0)";
             break;
         case 'reschedule':
             $NowaData = $_POST['newDateTime'];
             $Lekcja = $_POST['lekcja'];
-            $sql = "INSERT INTO zmiany_plan_lekcji VALUES (NULL, 'Przesun', '$data', '$klasa', '$indexLekcji $NowaData $Lekcja')";
+            $sql = "INSERT INTO zmiany_plan_lekcji VALUES (NULL, 'Przesun', '$data', '$klasa', '$indexLekcji $NowaData $Lekcja', 0)";
             break;
         case 'substitute':
             $Nauczyciel = $_POST['Nauczyciel'];
             $Lekcja = $_POST['lekcja'];
             $Sala = $_POST['Sala'];
-            $sql = "INSERT INTO zmiany_plan_lekcji VALUES (NULL, 'Zastepstwo', '$data', '$klasa', '$indexLekcji $Nauczyciel $Lekcja $Sala')";
+            $sql = "INSERT INTO zmiany_plan_lekcji VALUES (NULL, 'Zastepstwo', '$data', '$klasa', '$indexLekcji $Nauczyciel $Lekcja $Sala', 0)";
             break;
         default:
             $can_i = false;
@@ -41,4 +41,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $conn->close();
 } else {
     echo "Invalid request.";
+    header('Location: zaloguj.php');
 }
