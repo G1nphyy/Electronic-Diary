@@ -218,7 +218,7 @@ require_once 'db.php';
                 background-color: #555;
             }
         }
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
+        <?php if (isset($_SESSION['Rola_user']) && ($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == 'Nauczyciel')) : ?>
 
             form[action="upload_image.php"] {
                 position: fixed;
@@ -297,7 +297,7 @@ require_once 'db.php';
 
     </style>
     <script>
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
+        <?php if (isset($_SESSION['Rola_user']) && ($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == 'Nauczyciel')) : ?>
             function addForm() {
                 if (!document.body.querySelector('form')){
                     const form = document.createElement('form');
@@ -381,7 +381,7 @@ require_once 'db.php';
         <a href="all_article.php"><i class="fas fa-pen"></i> Wpisy</a>
         <a href="contact.php"><i class="fas fa-phone"></i> Kontakt</a>
         <a href="about.php"><i class="fas fa-info-circle"></i> O nas</a>
-        <?php if (isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') : ?>
+        <?php if (isset($_SESSION['Rola_user']) && ($_SESSION['Rola_user'] == 'Admin' || $_SESSION['Rola_user'] == 'Nauczyciel')) : ?>
             <button onclick="addForm()"><i class="fas fa-edit"></i> Dodaj Wpis</button>
         <?php endif; ?>
         <?php if (!isset($_SESSION['Login']) || $_SESSION['Login'] == false) : ?>
@@ -423,7 +423,7 @@ require_once 'db.php';
             <div class="featured-article">
                 
                 <h2><?= htmlspecialchars($ogloszenie['tytul']) ?></h2>
-                <img src="<?= htmlspecialchars($ogloszenie['zdjecie_header']) ?>" alt="Nie udało się wczytać zdjęcia">
+                <img src="<?= $ogloszenie['zdjecie_header'] ?>" alt="Nie udało się wczytać zdjęcia">
                 <p><?= htmlspecialchars($ogloszenie['tresc']) ?></p>
                 <a href="article.php?id=<?= htmlspecialchars($ogloszenie['id']) ?>" class="read-more-link">Czytaj Więcej <i class="fas fa-chevron-right"></i></a>
             </div>
@@ -440,7 +440,7 @@ require_once 'db.php';
                     }
                     foreach ($rows as $row){
                 ?>
-                <li><a href="article.php?id=<?= htmlspecialchars($row['id']) ?>"><?=$row['tytul']?></a></li>
+                <li><a href="article.php?id=<?= htmlspecialchars($row['id']) ?>"><?=htmlspecialchars($row['tytul'])?></a></li>
                 <?php } ?>
             </ul>
         </div>

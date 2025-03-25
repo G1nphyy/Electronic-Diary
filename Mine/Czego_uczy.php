@@ -14,9 +14,14 @@ if ($conn->connect_error) {
 
     $id_osoby = $_POST['id_osoby'];
     $Czego_uczy = $_POST['Czego_uczy']?: NULL;
+    $text_Czego = '';
+    foreach($Czego_uczy as $przedmiot) {
+        $text_Czego .= $przedmiot. ";";
+    }
+    
     $sql = "UPDATE `users` SET Czego_uczy = CASE
-            WHEN '$Czego_uczy' = '' THEN NULL
-            ELSE '$Czego_uczy'
+            WHEN '$text_Czego' = '' THEN NULL
+            ELSE '$text_Czego'
         END
         WHERE id = '$id_osoby'";
     $result = $conn->query($sql);

@@ -298,14 +298,14 @@ if (isset($_SESSION['Login']) && $_SESSION['Login']) {
         <div class="form-container sign-up-container">
             <form action="register.php" method="post">
                 <h1>Załóż konto</h1>
-                <input type="text" name="imie" placeholder="Imię" value="<?php echo isset($_SESSION['checking_imie']) ? htmlspecialchars($_SESSION['checking_imie']) : ''; ?>"><br>
+                <input type="text" name="imie" placeholder="Imię" value="<?php echo isset($_SESSION['checking_imie']) ? $_SESSION['checking_imie'] : ''; ?>"><br>
                 <?php
                     if (isset($_SESSION['imie_e'])) {
                         echo '<span class="error">' . $_SESSION['imie_e'] . '</span>';
                         unset($_SESSION['imie_e']);
                     }
                 ?>
-                <input type="text" name="nazwisko" placeholder="Nazwisko" value="<?php echo isset($_SESSION['checking_nazwisko']) ? htmlspecialchars($_SESSION['checking_nazwisko']) : ''; ?>"><br>
+                <input type="text" name="nazwisko" placeholder="Nazwisko" value="<?php echo isset($_SESSION['checking_nazwisko']) ? $_SESSION['checking_nazwisko'] : ''; ?>"><br>
                 <?php
                     if (isset($_SESSION['nazwisko_e'])) {
                         echo '<span class="error">' . $_SESSION['nazwisko_e'] . '</span>';

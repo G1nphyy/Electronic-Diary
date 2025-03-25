@@ -145,9 +145,11 @@ if ($result->num_rows > 0) {
         .fullscreen-img .prev {
             left: 20px;
             user-select: none;
+            padding: 20px;
         }
 
         .fullscreen-img .next {
+            padding: 20px;
             right: 20px;
             user-select: none;
         }
@@ -201,6 +203,97 @@ if ($result->num_rows > 0) {
         .blue:hover{
             background-color: #4C50AF;
         }
+        .EditModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .EditModalContent {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2.5em;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .EditModalContent h2 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .EditModal form {
+            display: grid;
+            gap: 10px;
+        }
+
+        .EditModal label {
+            font-weight: bold;
+        }
+
+        .EditModal  input[type="text"],
+        .EditModal  textarea,
+        .EditModal  input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .EditModal input[type="file"] {
+            padding: 6px;
+        }
+
+        .EditModal button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .EditModal button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        @media screen and (max-width: 768px) {
+            .EditModalContent {
+                width: 90%;
+            }
+        }
         @media screen and (max-width: 768px) {
             .container {
                 padding: 20px;
@@ -235,6 +328,50 @@ if ($result->num_rows > 0) {
         <?php endif; ?>
         <?php if ((isset($_SESSION['Rola_user']) && $_SESSION['Rola_user'] == 'Admin') ||  (isset($_SESSION['user_id']) && $article['id_autora'] == $_SESSION['user_id'])): ?>
             <button onclick="EditArticle()" class="popular-button blue">Edytuj ogłoszenie</button>
+            <div id="EditModal" class="EditModal">
+                <div class="EditModalContent">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2>Edytuj ogłoszenie</h2>
+                    <form id="editForm" action="" method="POST">
+                        <label for="tytul">Tytuł</label>
+                        <input type="text" id="tytul" name="edit_header" value="<?php echo htmlspecialchars($article['tytul']); ?>">
+                        <label for="announcementContent">Treść</label>
+                        <textarea id="announcementContent" name="edit_tresc" rows="10" style="width: 100%;"><?php echo htmlspecialchars($article['tresc']); ?></textarea><br><br>
+                        <label for="zjdecie_header">Zdjęcie Tytłuowe (nie wybierając zapiszę się ostatnie doane):</label>
+                        <input type="file" name="zdjecie_header" id="zdjecie_header">
+                        <label for="zdjecia">Zdjęcia (nie wybierając zapiszą się ostatnie doane):</label>
+                        <input type="file" name="zdjecia[]" id="zdjecia" multiple>
+                        <input type="hidden" name="from" value="article.php">
+                        <button type="submit">Zapisz zmiany</button>
+                    </form>
+                </div>
+            </div>
+            <script>
+                function EditArticle() {
+                    document.getElementById('EditModal').style.display = "block";
+                }
+
+                function closeModal() {
+                    document.getElementById('EditModal').style.display = "none";
+                }
+                document.getElementById('editForm').addEventListener('submit', function(event) {
+                    event.preventDefault(); 
+                    
+                    let formData = new FormData(this);
+                    fetch('edit_article.php?id=<?= $article['id'] ?>', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        closeModal();
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                });
+            </script>
         <?php endif; ?>
         <div class="full-content">
             <p><?php echo nl2br(htmlspecialchars($article['tresc'])); ?></p>
@@ -252,8 +389,13 @@ if ($result->num_rows > 0) {
                 $sql = "SELECT * FROM users WHERE id = '$autor'";
                 $result = $conn->query($sql);
                 $author_info = $result->fetch_assoc();
-                echo '<span class="author">Autor: ' . $author_info['Imie'] . ' ' . $author_info['Nazwisko'] . '</span>';
-                echo '<span class="date">Data: ' . $article['data'] . '</span>';
+                echo '<span class="author">Autor: ' . htmlspecialchars($author_info['Imie'] . ' ' . $author_info['Nazwisko']) . '</span>';
+                if ($article['is_edited']){
+                    echo '<span class="date">Data: ' . $article['data'] . " Data ostatniej edycji: ". $article['data_edited'] . '</span>';
+                }else{
+                    echo '<span class="date">Data: ' . $article['data'] . '</span>';
+                }
+                
             ?>
         </div>
         <a href="index.php" class="back-link"><i class="fas fa-chevron-left"></i> Powrót do ogłoszeń</a>

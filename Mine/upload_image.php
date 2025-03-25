@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $gallery_images_json = json_encode($gallery_image_paths);
 
-    $stmt = $conn->prepare("INSERT INTO ogloszenia (tytul, tresc, id_autora, zdjecie_header, zdjecia, data, is_popular) VALUES (?, ?, ?, ?, ?, ?, 0)");
+    $stmt = $conn->prepare("INSERT INTO ogloszenia (tytul, tresc, id_autora, zdjecie_header, zdjecia, data, is_popular, is_edited) VALUES (?, ?, ?, ?, ?, ?, 0, 0)");
     if ($stmt) {
         $data = date("Y-m-d H:i:s");
         $stmt->bind_param("ssisss", $tytul, $tresc, $id_autora, $header_image_path, $gallery_images_json, $data);

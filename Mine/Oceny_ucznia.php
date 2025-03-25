@@ -30,12 +30,11 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
         $parsedOceny = [];
 
         foreach ($oceny as $ocena) {
-            list($ocenaVal, $wagaAndOpis) = explode(':', $ocena);
-            list($waga, $opis) = explode('-', $wagaAndOpis);
+            $osan = explode("$", $ocena);                        
             $parsedOceny[] = [
-                'ocena' => (float) $ocenaVal,
-                'waga' => (float) $waga,
-                'opis' => $opis 
+                'ocena' => (float) $osan[0],
+                'waga' => (float) $osan[1],
+                'opis' => $osan[2] 
             ];
         }
 
@@ -79,7 +78,7 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oceny <?php echo htmlspecialchars($_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']); ?></title>
+    <title>Oceny <?php echo $_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']; ?></title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -351,7 +350,7 @@ if (isset($_SESSION['Login']) && $_SESSION['Rola_user'] === 'Uczen') {
 </head>
 <body>
     <header>
-        <h1>Oceny <?php echo htmlspecialchars($_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']); ?></h1>
+        <h1>Oceny <?php echo $_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']; ?></h1>
         <?php include 'nav.php'; ?>
     </header>
 

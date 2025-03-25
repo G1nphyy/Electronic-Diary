@@ -502,7 +502,7 @@ $conn->close();
             <label for="przedmiot">Przedmiot:</label>
             <select id="przedmiot" name="przedmiot" required>
                 <?php
-                    $array = explode(',',$_SESSION['Czego_uczy_user']) ;
+                    $array = explode(';',$_SESSION['Czego_uczy_user']) ;
                 ?>
 
                 <?php if($_SESSION['Rola_user'] == 'Admin'){ foreach($subjectColumns as $subject):?>
@@ -547,7 +547,7 @@ $conn->close();
             <select name="klasa" id="klasa">
                 <?php if (!empty($allClass)): ?>
                     <?php foreach(array_unique($allClass) as $osoba): ?>
-                        <option value="<?= htmlspecialchars($osoba) ?>"> <?= htmlspecialchars($osoba)?></option>
+                        <option value="<?= $osoba ?>"> <?= $osoba?></option>
                     <?php endforeach; ?>
                 <?php endif ?>
             </select>
@@ -575,7 +575,7 @@ $conn->close();
             <label for="przedmiot">Przedmiot:</label>
             <select id="przedmiot" name="przedmiot" required>
                 <?php
-                    $array = explode(',',$_SESSION['Czego_uczy_user']) ;
+                    $array = explode(';',$_SESSION['Czego_uczy_user']) ;
                 ?>
 
                 <?php if($_SESSION['Rola_user'] == 'Admin'){ foreach($subjectColumns as $subject):?>
@@ -620,7 +620,7 @@ $conn->close();
             <select name="klasa" id="klasa">
                 <?php if (!empty($allClass)): ?>
                     <?php foreach(array_unique($allClass) as $osoba): ?>
-                        <option value="<?= htmlspecialchars($osoba) ?>"> <?= htmlspecialchars($osoba)?></option>
+                        <option value="<?= $osoba ?>"> <?= $osoba?></option>
                     <?php endforeach; ?>
                 <?php endif ?>
             </select>

@@ -226,15 +226,21 @@ if ($result) {
         <?php include 'nav.php'?>
     </header>
     <div class="container">
-        <?php if($_SESSION['Rola_user'] == 'Nauczyciel') {
-            $is = false;
-            foreach($rows_teachers as $row) {
-                $is = array_search($_SESSION['user_id'], $row);
+    <?php 
+        if ($_SESSION['Rola_user'] == 'Nauczyciel') {
+            $is = false;            
+            foreach ($rows_teachers as $row) {
+                if ($row['id'] == $_SESSION['user_id']) {
+                    $is = true;
+                    break;
+                }
             }
-        }
-        if(isset($is) && $is) :?>
-            <a href="Zobacz_plan.php?id=<?= $_SESSION['user_id']?>" class="my_plan">Zobacz swój plan</a>
-        <?php endif ?>
+        
+            if ($is) : ?>
+                <a href="Zobacz_plan.php?id=<?= htmlspecialchars($_SESSION['user_id']) ?>" class="my_plan">Zobacz swój plan</a>
+    <?php endif; } ?>
+
+
 
         <table>
             <thead>
@@ -263,8 +269,8 @@ if ($result) {
             <tbody>
                 <?php foreach ($rows_teachers as $row): ?>
                    <tr>
-                        <td><?=$row['Imie']." ".$row['Nazwisko']?></td>
-                        <td><a href="Zobacz_plan.php?id=<?= $row['id'] ?>">Zobacz plan nauczyciela <?= $row['Imie'] ?></a></td>
+                        <td><?=htmlspecialchars($row['Imie']." ".$row['Nazwisko'])?></td>
+                        <td><a href="Zobacz_plan.php?id=<?= $row['id'] ?>">Zobacz plan nauczyciela <?= htmlspecialchars($row['Imie']) ?></a></td>
                    </tr>
                 <?php endforeach ?>
             </tbody>
@@ -328,7 +334,7 @@ if ($result) {
                                             ?>
                                             <select name="nauczyciel_<?= strtolower($day) ?>[<?= $time ?>]">
                                                 <?php foreach ($rowsn as $Nauczyciel) : ?>
-                                                    <option value="<?= $Nauczyciel['id'] ?>"><?= $Nauczyciel['Imie']." ".$Nauczyciel['Nazwisko']?></option>
+                                                    <option value="<?= $Nauczyciel['id'] ?>"><?= htmlspecialchars($Nauczyciel['Imie']." ".$Nauczyciel['Nazwisko'])?></option>
                                                 <?php endforeach; ?>
                                             </select>
                                             <input type="number" name="sala_<?= strtolower($day) ?>[<?= $time ?>]" placeholder="Sala">

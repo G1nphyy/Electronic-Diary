@@ -18,7 +18,8 @@ if ($conn->connect_errno != 0) {
         $Imie = $_POST['imie'];
         $_SESSION['checking_imie'] = $Imie;
         if(!preg_match("/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/", $Imie)){
-            $_SESSION['imie_e'] = 'Imię może składać się tylko z liter';
+
+            $_SESSION['imie_e'] = 'Imię może składać się tylko z liter - ';
             $is_okay = false;
         }
         if(str_contains($Imie," ")){
@@ -36,7 +37,7 @@ if ($conn->connect_errno != 0) {
         $Nazwisko = $_POST['nazwisko'];
         $_SESSION['checking_nazwisko'] = $Nazwisko;
         if(!preg_match("/^[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+$/", $Nazwisko)){
-            $_SESSION['nazwisko_e'] = 'Nazwisko może składać się tylko z liter';
+            $_SESSION['nazwisko_e'] = 'Nazwisko może składać się tylko z liter ';
             $is_okay = false;
         }
         if(str_contains($Nazwisko," ")){
@@ -111,9 +112,7 @@ if ($conn->connect_errno != 0) {
         header('Location: zaloguj_rejstracja.php?register=1');
         exit();
     }
-
-    $Imie = htmlentities($Imie, ENT_QUOTES, 'UTF-8');
-    $Nazwisko = htmlentities($Nazwisko, ENT_QUOTES, 'UTF-8');
+    
     $Haslo = password_hash($Haslo, PASSWORD_DEFAULT);
 
     $sql = "SELECT * FROM users WHERE `E-mail` = '$Email'";

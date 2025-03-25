@@ -26,7 +26,7 @@ if ($conn->connect_error) {
      
         $oceny = $row[$przedmiot]; 
         $oceny = explode(',', $oceny); 
-        $oceny[] = $ocena.":".$waga."-".$opis;
+        $oceny[] = $ocena."$".$waga.'$'.$opis;
         if(empty($oceny[0])) {
             $oceny_str = implode('', $oceny);
         }else{

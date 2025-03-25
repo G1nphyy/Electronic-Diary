@@ -745,7 +745,7 @@ if ($_SESSION['Rola_user'] !== 'Uczen') {
                     $row = $result->fetch_assoc();
                 ?>
                 <div>
-                    <label for="multi-attendance-<?= $ID ?>"><?=$row['Imie']?> <?=$row['Nazwisko']?> :</label>
+                    <label for="multi-attendance-<?= $ID ?>"><?=htmlspecialchars($row['Imie'])?> <?=htmlspecialchars($row['Nazwisko'])?> :</label>
                     <select name="attendance_status[<?= $ID ?>]" id="multi-attendance-<?= $ID ?>">
                         <option value="Obecny">Obecny</option>
                         <option value="Nieobecny">Nieobecny</option>

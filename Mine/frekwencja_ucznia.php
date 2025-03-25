@@ -162,7 +162,7 @@ $conn->close();
     </header>
     <div class="container">
         
-        <p>Frekwencja dla <?php echo htmlspecialchars($_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']); ?>!</p>
+        <p>Frekwencja dla <?php echo $_SESSION['Imie_user'] . " " . $_SESSION['Nazwisko_user']; ?>!</p>
 
         <form method="post" class="filters">
             <label for="filter_date_from">Od:</label>

@@ -38,15 +38,14 @@ if ($conn->connect_error) {
         $wszystkie_oceny = explode(",", $current_grades_str);
         $grades = [];
         foreach ($wszystkie_oceny as $mark) {
-            list($ocena, $waga) = explode(":", $mark);
-            list($waga, $opis) = explode("-", $waga);
-            $grades[] = ['ocena' => $ocena, 'waga' => $waga, 'opis' => $opis];
+            $osan = explode("$", $mark);            
+            $grades[] = ['ocena' => $osan[0], 'waga' => $osan[1], 'opis' => $osan[2]];
         }
         $grades[$grade_id] = ['ocena' => $edited_grade, 'waga' => $edited_waga, 'opis' => $edited_opis];
 
         $updated_grades = [];
         foreach ($grades as $grade) {
-            $updated_grades[] = $grade['ocena'] . ':' . $grade['waga']. '-' . $grade['opis'];
+            $updated_grades[] = $grade['ocena'] . '$' . $grade['waga']. '$' . $grade['opis'];
         }
         $updated_grades_str = implode(",", $updated_grades);
 

@@ -252,7 +252,7 @@ if ($conn->connect_errno != 0) {
         }
         .pagination a {
             padding: 5px 10px;
-            margin: 10px
+            margin: 10px;
             text-decoration: none;
             color: #333;
             border: 1px solid #ddd;
@@ -538,6 +538,41 @@ if ($conn->connect_errno != 0) {
                 margin-right: 100px;
             }
         }
+        .dropdown-checkbox {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            z-index: 1;
+            border: 1px solid #ccc;
+            max-height: 95px;
+            overflow: auto;
+        }
+
+        .dropdown-checkbox:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content label {
+            display: block;
+            margin-bottom: 8px;
+        }
 
     </style>
     <script>
@@ -574,7 +609,7 @@ if ($conn->connect_errno != 0) {
     <div class="container">
         <div class="filters">
             <form id="searchForm" method="post" action="">
-                <input id="oho" type="text" name="search" placeholder="Szukaj..." value="<?= htmlspecialchars($search) ?>">
+                <input id="oho" type="text" name="search" placeholder="Szukaj..." value="<?= $search ?>">
                 <button type="submit">Szukaj</button>
             </form>
             <form action="" method="post" id="filters">
@@ -629,7 +664,7 @@ if ($conn->connect_errno != 0) {
                     <?php endif; ?>
                     <?php if ($_SESSION['Rola_user'] == 'Nauczyciel') : ?>
                         <?php
-                            $array = explode(',',$_SESSION['Czego_uczy_user']);
+                            $array = explode(';',$_SESSION['Czego_uczy_user']);
                             foreach ($array as $subject){
                                 echo "<th>".htmlspecialchars($subject)."</th>";
                             }
@@ -658,9 +693,8 @@ if ($conn->connect_errno != 0) {
                                             $oceny = explode(",", $osoba[$subject]);
                                             $wszystkie_oceny = [];
                                             foreach ($oceny as $mark) {
-                                                list($ocena, $wagaAndOpis) = explode(":", $mark);
-                                                list($waga, $opis) = explode("-", $wagaAndOpis);            
-                                                $wszystkie_oceny[] = ['ocena' => $ocena, 'waga' => $waga, 'opis' => $opis];
+                                                $osan = explode("$", $mark);            
+                                                $wszystkie_oceny[] = ['ocena' => $osan[0], 'waga' => $osan[1], 'opis' => $osan[2]];                                                          
                                             }
                                             foreach ($wszystkie_oceny as $index => $ocena) {
                                                 $gradeFormId = $osoba['id'] . '-' . $subject . '-' . $index;
@@ -677,14 +711,16 @@ if ($conn->connect_errno != 0) {
                                         $gradeFormId = $osoba['id'].'-'.$subject.'-'.$index;
                                         ?>
                                         <div id="edit-form-<?= $gradeFormId ?>" class="edit-form" style="display: none">
-                                            <p>Waga: <?= $ocena['waga']?> <br>
-                                            Opis: <?= $ocena['opis']?></p>
                                             <form action="update_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post">
+                                                <p>Waga: <input type="number" placeholder='Waga' name="waga" value="<?= htmlspecialchars($ocena['waga']) ?>" class="liczba"> <br>
+                                                Opis: <input type="text" placeholder="Opis" name="opis" value="<?= $ocena['opis']?>"> <br>
+                                                Ocena: <input type="number" placeholder='Ocena' min="1" max = "6" name="edited_grade" id="edited_grade_<?= $gradeFormId ?>" value="<?= htmlspecialchars($ocena['ocena']) ?>" class="liczba">
+                                                </p>
+                                           
                                                 <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
                                                 <input type="hidden" name="subject" value="<?= $subject ?>">
-                                                <input type="hidden" name="grade_id" value="<?= $index ?>">
-                                                <input type="number" placeholder='Ocena' min="1" max = "6" name="edited_grade" id="edited_grade_<?= $gradeFormId ?>" value="<?= htmlspecialchars($ocena['ocena']) ?>" class="liczba">
-                                                <input type="number" placeholder='Waga' name="waga" value="<?= htmlspecialchars($ocena['waga']) ?>" class="liczba">
+                                                <input type="hidden" name="grade_id" value="<?= $index ?>">                                                                                      
+                                                <br>
                                                 <button type="submit">Edytuj</button>
                                             </form>
                                             <form action="delete_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post">
@@ -712,10 +748,8 @@ if ($conn->connect_errno != 0) {
                                     $wszystkie_oceny = [];
                                     
                                     foreach ($oceny as $mark) {
-                                        list($ocena, $wagaAndOpis) = explode(":", $mark);
-                                        list($waga, $opis) = explode("-", $wagaAndOpis);
-                                        
-                                        $wszystkie_oceny[] = ['ocena' => $ocena, 'waga' => $waga, 'opis' => $opis];
+                                        $osan = explode("$", $mark);            
+                                        $wszystkie_oceny[] = ['ocena' => $osan[0], 'waga' => $osan[1], 'opis' => $osan[2]];                                        
                                     }
                                     
                                     foreach ($wszystkie_oceny as $index => $ocena) {
@@ -733,24 +767,26 @@ if ($conn->connect_errno != 0) {
                                 foreach ($wszystkie_oceny as $index => $ocena) {
                                     $gradeFormId = $osoba['id'].'-'.$subject.'-'.$index;
                                     ?>
-                                    <div id="edit-form-<?= $gradeFormId ?>" class="edit-form" style="display: none">
-                                        <p>Waga: <?= $ocena['waga']?> <br>
-                                        Opis: <?= $ocena['opis']?></p>
-                                        <form action="update_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post">
-                                            <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
-                                            <input type="hidden" name="subject" value="<?= $subject ?>">
-                                            <input type="hidden" name="grade_id" value="<?= $index ?>">
-                                            <input type="number" placeholder='Ocena' min="1" max="6" name="edited_grade" id="edited_grade_<?= $gradeFormId ?>" value="<?= htmlspecialchars($ocena['ocena']) ?>" class="liczba">
-                                            <input type="number" placeholder='Waga' name="waga" value="<?= htmlspecialchars($ocena['waga']) ?>" class="liczba">
-                                            <button type="submit">Edytuj</button>
-                                        </form>
-                                        <form action="delete_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post">
-                                            <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
-                                            <input type="hidden" name="subject" value="<?= $subject ?>">
-                                            <input type="hidden" name="grade_id" value="<?= $index ?>">
-                                            <button type="submit">Usuń</button>
-                                        </form>
-                                    </div>
+                                        <div id="edit-form-<?= $gradeFormId ?>" class="edit-form" style="display: none">
+                                            <form action="update_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post">
+                                                <p>Waga: <input type="number" placeholder='Waga' name="waga" value="<?= htmlspecialchars($ocena['waga']) ?>" class="liczba"> <br>
+                                                Opis: <input type="text" placeholder="Opis" name="opis" value="<?= $ocena['opis']?>"> <br>
+                                                Ocena: <input type="number" placeholder='Ocena' min="1" max = "6" name="edited_grade" id="edited_grade_<?= $gradeFormId ?>" value="<?= htmlspecialchars($ocena['ocena']) ?>" class="liczba">
+                                                </p>
+                                           
+                                                <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
+                                                <input type="hidden" name="subject" value="<?= $subject ?>">
+                                                <input type="hidden" name="grade_id" value="<?= $index ?>">                                                                                      
+                                                <br>
+                                                <button type="submit">Edytuj</button>
+                                            </form>
+                                            <form action="delete_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post">
+                                                <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
+                                                <input type="hidden" name="subject" value="<?= $subject ?>">
+                                                <input type="hidden" name="grade_id" value="<?= $index ?>">
+                                                <button type="submit">Usuń</button>
+                                            </form>
+                                        </div>
                                     <?php
                                 }
                             }
@@ -768,7 +804,7 @@ if ($conn->connect_errno != 0) {
                                     <option value="Admin" <?= $osoba['Rola'] == 'Admin' ? 'selected' : '' ?>>Admin</option>
                                 </select>
                             </form>
-                            <?php endif; ?>
+                            <?php endif?>
                             <form action="add_grade.php?page=<?= $page ?>&search=<?= $search?>" method="post" class="form-inline">
                                 <input type="hidden" name="user_id" value="<?= $osoba['id'] ?>">
                                 <select name="subject_grade">
@@ -788,7 +824,7 @@ if ($conn->connect_errno != 0) {
                                     <?php endif; ?>
                                     <?php
                                         if ($_SESSION['Rola_user'] == 'Nauczyciel'){
-                                            $array = explode(',',$_SESSION['Czego_uczy_user']);
+                                            $array = explode(';',$_SESSION['Czego_uczy_user']);
                                             foreach ($array as $subject){
                                                 echo '<option value="'.$subject.'">'.$subject.'</option>';
                                             }
@@ -802,14 +838,21 @@ if ($conn->connect_errno != 0) {
                                 <form action="Czego_uczy.php?page=<?= $page ?>&search=<?= $search?>" method="post">
                                     Czego uczy:
                                     <input type="hidden" name="id_osoby" value="<?=$osoba['id']?>">
-                                    <select name="Czego_uczy" onchange="this.form.submit()">
-                                        <option value="" selected></option>
-                                        <?php foreach ($subjectColumns as $subject): ?>
-                                            <option value="<?= $subject ?>" <?= $osoba['Czego_uczy'] === $subject ? 'selected' : ''?>><?= $subject ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                    <div class="dropdown-checkbox">
+                                        <button type="button" class="dropdown-btn">Wybierz przedmioty</button>
+                                        <div class="dropdown-content">
+                                            <?php foreach ($subjectColumns as $subject): ?>
+                                                <label>
+                                                    <input type="checkbox" name="Czego_uczy[]" value="<?= $subject ?>" <?= in_array($subject, (array)explode(";", $osoba['Czego_uczy'] )) ? 'checked' : '' ?>>
+                                                    <?= $subject ?>                                            
+                                                </label>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                    <button type="submit">Zapisz</button>
                                 </form>
-                            <?php endif; ?>
+                            <?php endif; ?>                                                        
+
                             <?php if ($osoba['Rola'] === 'Uczen' and $_SESSION['Rola_user'] === 'Admin'): ?>
                             <br>
                                 <form action="Set_klasa.php" method="post">
@@ -833,9 +876,8 @@ if ($conn->connect_errno != 0) {
                                         $oceny = explode(",", $osoba[$subject]);
                                         $wszystkie_oceny = [];
                                         foreach ($oceny as $mark) {
-                                            list($ocena, $wagaAndOpis) = explode(":", $mark);
-                                            list($waga, $opis) = explode("-", $wagaAndOpis);
-                                            $wszystkie_oceny[] = ['ocena' => $ocena, 'waga' => $waga, 'opis' => $opis];
+                                            $osan = explode("$", $mark);            
+                                            $wszystkie_oceny[] = ['ocena' => $osan[0], 'waga' => $osan[1], 'opis' => $osan[2]];                                             
                                         }
                                         foreach ($wszystkie_oceny as $index => $ocena) {
                                             $ilosc_ocen += $ocena['waga'];
@@ -859,9 +901,8 @@ if ($conn->connect_errno != 0) {
                                         $oceny = explode(",", $osoba[$subject]);
                                         $wszystkie_oceny = [];
                                         foreach ($oceny as $mark) {
-                                            list($ocena, $wagaAndOpis) = explode(":", $mark);
-                                            list($waga, $opis) = explode("-", $wagaAndOpis);
-                                            $wszystkie_oceny[] = ['ocena' => $ocena, 'waga' => $waga, 'opis' => $opis];
+                                            $osan = explode("$", $mark);            
+                                            $wszystkie_oceny[] = ['ocena' => $osan[0], 'waga' => $osan[1], 'opis' => $osan[2]];
                                         }
                                         foreach ($wszystkie_oceny as $index => $ocena) {
                                             $ilosc_ocen += $ocena['waga'];
@@ -960,7 +1001,7 @@ if ($conn->connect_errno != 0) {
                         <?php endif; ?>
                         <?php
                             if ($_SESSION['Rola_user'] == 'Nauczyciel'){
-                                $array = explode(',',$_SESSION['Czego_uczy_user']);
+                                $array = explode(';',$_SESSION['Czego_uczy_user']);
                                 foreach ($array as $subject){
                                     echo '<option value="'.$subject.'">'.$subject.'</option>';
                                 }
@@ -1040,7 +1081,7 @@ if ($conn->connect_errno != 0) {
                     <?php endif; ?>
                     <?php
                         if ($_SESSION['Rola_user'] == 'Nauczyciel'){
-                            $array = explode(',',$_SESSION['Czego_uczy_user']);
+                            $array = explode(';',$_SESSION['Czego_uczy_user']);
                             foreach ($array as $subject){
                                 echo '<option value="'.$subject.'">'.$subject.'</option>';
                             }
@@ -1056,7 +1097,7 @@ if ($conn->connect_errno != 0) {
 
                     ?>
                     <div class="grade-entry">
-                        <p><?= $row['Imie']. " ". $row["Nazwisko"]. " - ". $row['Klasa']?>:
+                        <p><?= htmlspecialchars($row['Imie']. " ". $row["Nazwisko"]. " - ". $row['Klasa'])?>:
                             <select name="grades[<?= $id ?>]" placeholder="Ocena">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -1253,6 +1294,18 @@ if ($conn->connect_errno != 0) {
                     }
                 });
             });
+
+            window.onclick = function(event) {
+                if (!event.target.matches('.dropdown-btn')) {
+                    var dropdowns = document.getElementsByClassName("dropdown-content");
+                    for (var i = 0; i < dropdowns.length; i++) {
+                        var openDropdown = dropdowns[i];
+                        if (openDropdown.style.display === "block") {
+                            openDropdown.style.display = "none";
+                        }
+                    }
+                }
+            };
         </script>
     </div>
     <?php include 'footer.php' ?>

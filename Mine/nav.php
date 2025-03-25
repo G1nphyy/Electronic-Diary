@@ -1,5 +1,6 @@
 <head>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    
+    <link rel="shortcut icon" href="<?= isset($_SESSION['Icon_user']) && $_SESSION['Icon_user'] == '' ? 'favicon.ico' : htmlspecialchars($_SESSION['Icon_user'])?>" >
 </head>
 <div class="nav" onclick="openNav()">
 <?= isset($_SESSION['Icon_user']) && $_SESSION['Icon_user'] == '' ? '&#9776;' : '<img src="'.htmlspecialchars($_SESSION['Icon_user']). '"></img>' ?>
@@ -75,9 +76,31 @@
         }
 </script>
 <style>
+    html::-webkit-scrollbar {
+        width: 12px;
+    }
+    html{
+        scrollbar-width: 12px;
+        scrollbar-color: #333;
+    }
+    
+    html::-webkit-scrollbar-track {
+        background-color: #333;
+    }
+    
+    html::-webkit-scrollbar-thumb {
+        border-radius:  16px  ;
+        background-color: #f6f6f6;
+        border: 1px solid #333;
+    }
     .content-nav{
         max-height: 70dvh;
         overflow: auto;
+        -ms-overflow-style: none; 
+        scrollbar-width: none;  
+    }
+    .content-nav::-webkit-scrollbar {
+        display: none;
     }
     header {
         background-color: #333;
@@ -118,7 +141,9 @@
         padding: 10px 17px;
         transition: 0.3s;
         border-radius: 50%;
+
     }
+
     .nav img{
         position: relative;
         padding-top: 7px;

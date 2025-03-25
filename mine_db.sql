@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Lip 12, 2024 at 10:32 PM
+-- Generation Time: Wrz 18, 2024 at 05:56 PM
 -- Wersja serwera: 10.4.32-MariaDB
 -- Wersja PHP: 8.2.12
 
@@ -51,6 +51,14 @@ CREATE TABLE `plany lekcji` (
   `Piatek` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
 
+--
+-- Dumping data for table `plany lekcji`
+--
+
+INSERT INTO `plany lekcji` (`id`, `Klasa`, `Poniedzialek`, `Wtorek`, `Sroda`, `Czwartek`, `Piatek`) VALUES
+(6, '1D', '[{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"2\",\"Sala\":\"69\"},null,null,null,null,null,null,null,null,null]', '[{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"2\",\"Sala\":\"69\"},null,null,null,null,null,null,null,null,null]', '[{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"2\",\"Sala\":\"69\"},null,null,null,null,null,null,null,null,null]', '[{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"2\",\"Sala\":\"69\"},null,null,null,null,null,null,null,null,null]', '[{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"2\",\"Sala\":\"69\"},null,null,null,null,null,null,null,null,null]'),
+(7, '1A', '[null,null,null,null,null,null,null,null,null,{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"4\",\"Sala\":\"123\"}]', '[null,null,null,null,null,null,null,null,null,{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"4\",\"Sala\":\"123\"}]', '[null,null,null,null,null,null,null,null,null,{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"4\",\"Sala\":\"123\"}]', '[null,null,null,null,null,null,null,null,null,{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"4\",\"Sala\":\"123\"}]', '[null,null,null,null,null,null,null,null,null,{\"Przedmiot\":\"Matematyka\",\"Nauczyciel\":\"4\",\"Sala\":\"123\"}]');
+
 -- --------------------------------------------------------
 
 --
@@ -68,6 +76,13 @@ CREATE TABLE `tests` (
   `data_utworzenia` date NOT NULL,
   `data` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
+
+--
+-- Dumping data for table `tests`
+--
+
+INSERT INTO `tests` (`id`, `klasa`, `przedmiot`, `lekcja`, `kategoria`, `nazwa`, `opis`, `data_utworzenia`, `data`) VALUES
+(1, '1A', 'Polski', 2, 'Sprawdzian', 'Doawanie i odejmownie liczb rzeczywistych', 'Sdasdasdasdsasadas', '2024-09-11', '2024-09-11');
 
 -- --------------------------------------------------------
 
@@ -93,8 +108,10 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `Imie`, `Nazwisko`, `Klasa`, `E-mail`, `Haslo`, `Rola`, `Czego_uczy`, `icon`) VALUES
 (1, 'Adam', 'Broda', NULL, 'adam@gmail.com', '$2y$10$MShCXrREHC0X78RqUHMVx.ktlebzyJ0sTB8bgnBzg3xjCukLjEG1a', 'Admin', NULL, ''),
-(2, 'Filip', 'Garczyk', NULL, 'filip@gmail.com', '$2y$10$bIYz46jaRsauqaTqogVFA.jjGhG4VXeUmOwsjfrWlGihAgbJFVFsu', 'Nauczyciel', NULL, ''),
-(3, 'Alex', 'Krawczyk', NULL, 'alex@gmail.com', '$2y$10$Zf5cc3pvmbzu6lMiLZ79NuRpt0JOrQJU56FHvrkjKQOYtwnL8HPlW', 'Uczen', NULL, '');
+(2, 'Filip', 'Garczyk', NULL, 'filip@gmail.com', '$2y$10$bIYz46jaRsauqaTqogVFA.jjGhG4VXeUmOwsjfrWlGihAgbJFVFsu', 'Nauczyciel', NULL, 'avatars/green_avatar.png'),
+(3, 'Alex', 'Krawczyk', '1A', 'alex@gmail.com', '$2y$10$Zf5cc3pvmbzu6lMiLZ79NuRpt0JOrQJU56FHvrkjKQOYtwnL8HPlW', 'Uczen', NULL, ''),
+(4, 'Michał', 'Walig&oacute;ra', NULL, 'michal@gmail.com', '$2y$10$5JZAotqJlvT6mT.xjmKlU.t8WCg2UFrdWZSMhwr6CoYM.gNZT1nU.', 'Nauczyciel', NULL, ''),
+(7, 'Eryk', 'Gomółka', '1B', 'eryk@gmail.com', '$2y$10$IYoI69xgmMW/c4ROUpFtMez1B90swPfKkVgp0wgyTd7uW6ZZM4W.i', 'Uczen', NULL, 'avatars/green_avatar.png');
 
 -- --------------------------------------------------------
 
@@ -116,8 +133,12 @@ CREATE TABLE `users_oceny` (
 
 INSERT INTO `users_oceny` (`id_ocen`, `id_ucznia`, `Matematyka`, `Angielski`, `Polski`) VALUES
 (1, 1, NULL, NULL, NULL),
-(2, 2, NULL, NULL, NULL),
-(3, 3, NULL, NULL, NULL);
+(2, 2, '', NULL, NULL),
+(3, 3, '2:3-Sprawdzian - Unit 3', NULL, NULL),
+(4, 4, NULL, NULL, NULL),
+(5, 5, NULL, NULL, NULL),
+(6, 6, NULL, NULL, NULL),
+(7, 7, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -190,25 +211,25 @@ ALTER TABLE `attendance`
 -- AUTO_INCREMENT for table `plany lekcji`
 --
 ALTER TABLE `plany lekcji`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users_oceny`
 --
 ALTER TABLE `users_oceny`
-  MODIFY `id_ocen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_ocen` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `wiadomości`
@@ -226,6 +247,86 @@ ALTER TABLE `wiadomości`
 ALTER TABLE `attendance`
   ADD CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 COMMIT;
+
+CREATE TABLE `zmiany_plan_lekcji` (
+  `id` int(11) NOT NULL,
+  `rodzaj` text NOT NULL,
+  `data` text NOT NULL,
+  `klasa` text NOT NULL,
+  `co_sie_dzieje` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
+
+--
+-- Dumping data for table `zmiany_plan_lekcji`
+--
+
+INSERT INTO `zmiany_plan_lekcji` (`id`, `rodzaj`, `data`, `klasa`, `co_sie_dzieje`) VALUES
+(4, 'Odwolaj', '2024-08-09', '1A', '9 4'),
+(5, 'Przesun', '2024-08-10', '1A', '9 2024-08-10 8'),
+(7, 'Zastepstwo', '2024-08-11', '1A', '9 2 Angielski 11');
+
+--
+-- Indeksy dla zrzutów tabel
+--
+
+--
+-- Indeksy dla tabeli `zmiany_plan_lekcji`
+--
+ALTER TABLE `zmiany_plan_lekcji`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `zmiany_plan_lekcji`
+--
+ALTER TABLE `zmiany_plan_lekcji`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+COMMIT;
+
+CREATE TABLE `ogloszenia` (
+  `id` int(11) NOT NULL,
+  `tytul` text NOT NULL,
+  `tresc` text NOT NULL,
+  `id_autora` int(11) NOT NULL,
+  `data` text NOT NULL,
+  `zdjecie_header` text NOT NULL,
+  `zdjecia` text NOT NULL,
+  `is_popular` tinyint(1) NOT NULL,
+  `is_edited` tinyint(1) NOT NULL,
+  `data_edited` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_polish_ci;
+
+--
+-- Dumping data for table `ogloszenia`
+--
+
+INSERT INTO `ogloszenia` (`id`, `tytul`, `tresc`, `id_autora`, `data`, `zdjecie_header`, `zdjecia`, `is_popular`, `is_edited`, `data_edited`) VALUES
+(5, 'Wycieczka Szkolna - Europa', 'Wycieczka była niesamowita, zwiedziliśmy wiele państw takich jak:\r\n\r\n- Dania\r\n- Ukraina\r\n- Rosja\r\n- Polska\r\n- UK\r\n', 1, '2024-07-31 16:15:43', 'uploads/1722435343_header_Power Rangers_.. Wonderla 😆 . . .jpg', '[\"uploads\\/1722435343_gallery_Train.jpg\",\"uploads\\/1722435343_gallery_Top 10 Fun & Amazing Vacation Spots For Teenagers _ Travel Ideas & Travel Guide.jpg\",\"uploads\\/1722435343_gallery_Trip.jpg\"]', 1, 1, '2024-07-31 16:15:59');
+
+--
+-- Indeksy dla zrzutów tabel
+--
+
+--
+-- Indeksy dla tabeli `ogloszenia`
+--
+ALTER TABLE `ogloszenia`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `ogloszenia`
+--
+ALTER TABLE `ogloszenia`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+COMMIT;
+
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
